@@ -165,7 +165,7 @@ function readChatbox() {
       const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
       const rewards = chat.match(regex);
       rewards.forEach((reward) => {
-      saveSingleItem(reward[0], regex, 'skilling');
+      saveSingleItem(reward, regex, 'skilling');
       });
     } else if (foundSpoils) {
       const regex = /(\[\d+:\d+:\d+\]) You receive: ((?:[\w\s()]+))/g;
