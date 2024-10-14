@@ -115,11 +115,12 @@ function showSelectedChat(chat) {
 function readChatbox() {
   let opts = reader.read() || [];
   let chat = '';
-  // CUSTOM: Additional options to ignore adding to coin pouch and removing commas
-  const ignoreLine = /\[\d+:\d+:\d+\] \d*,?\d* coins have been added to your money pouch.\s?/g;
+  // CUSTOM: Ignore currency pouch
+  const ignoreLine = /\[\d+:\d+:\d+\] The following has been added to your currency pouch: \d+ x Spooky tokens\.\s?/g;
   for (let a in opts) {
-    chat += opts[a].text.replace(ignoreLine, '').replace(',', '') + ' ';
+    chat += opts[a].text.replace(',', '') + ' ';
   }
+  chat = chat.replace(ignoreLine, '');
   // DEBUG: See chat and opts in console
   if (debugChat) {
     if (chat.trim().length > 0) {
@@ -140,7 +141,7 @@ function readChatbox() {
   const foundSpoils = found[3];
   if (found.includes(true)) {
     if (foundBag) {
-      const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils). and receive: \s?((?:\1 \d+[ x ]?[\w\s()]+ ?)+)/g
+      const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils)\.? and receive: \s?((?:\1 \d+[ x ]?[\w\s()]+ ?)+)/g
       const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([A-Za-z\s'\-!()\d]*)/g;
       const rewardRegex = new RegExp(regex.source);
       const rewards = chat.match(regex);
