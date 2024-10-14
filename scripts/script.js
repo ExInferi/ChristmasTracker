@@ -4,7 +4,7 @@ import * as util from './utility.js';
 A1lib.identifyApp('appconfig.json');
 
 // Set up main constants
-const APP_PREFIX = 'wildyRewards';
+const APP_PREFIX = 'harvestHollowHaul';
 
 const SELECTED_CHAT = `${APP_PREFIX}Chat`;
 const DATA_STORAGE = `${APP_PREFIX}Data`;
@@ -13,7 +13,7 @@ const TOTALS_PREFIX = `${APP_PREFIX}Totals_`;
 const DISPLAY_MODE = `${APP_PREFIX}Display`;
 
 // Themed app color
-const COL = [180, 195, 152];
+const COL = [255, 102, 0];
 
 // Additional constants
 const appURL = window.location.href.replace('index.html', '');
@@ -30,11 +30,14 @@ let debugChat = false;
 let reader = new Chatbox.default();
 reader.readargs = {
   colors: [
-    A1lib.mixColor(30, 255, 0), // Main/very common wildy reward color (green)
-    A1lib.mixColor(102, 152, 255), // Common wildy reward color (blue)
-    A1lib.mixColor(163, 53, 238), // Uncommon wildy reward color (purple)
-    A1lib.mixColor(255, 128, 0), // Rare wildy reward color (orange)
-    // A1lib.mixColor(127, 169, 255), // Test Chat text color
+    A1lib.mixColor(30, 255, 0), // Main/very common reward color (green)
+    A1lib.mixColor(102, 152, 255), // Common reward color (blue)
+    A1lib.mixColor(163, 53, 238), // Uncommon reward color (purple)
+    A1lib.mixColor(255, 128, 0), // Rare reward color (orange)
+    A1lib.mixColor(5, 103, 174), // Basic spoils (blue)
+    A1lib.mixColor(112, 53, 218),// Impressive spoils (purple)
+    A1lib.mixColor(248, 181, 23), // Prestigious spoils (gold)
+    appColor, // Dark orange text
   ],
   backwards: true,
 };
@@ -47,9 +50,9 @@ let saveChatHistory = util.getSessionStorage(CHAT_SESSION) || [];
 if (!util.getLocalStorage(DISPLAY_MODE)) util.setLocalStorage(DISPLAY_MODE, 'history');
 
 // CUSTOM: Setup additional storage variables
-let wildSackOpened = parseInt(util.getLocalStorage(`${APP_PREFIX}WildSackOpened`)) || 0;
-let veryWildSackOpened = parseInt(util.getLocalStorage(`${APP_PREFIX}VeryWildSackOpened`)) || 0;
-let wyrmGlandOpened = parseInt(util.getLocalStorage(`${APP_PREFIX}WyrmGlandOpened`)) || 0;
+let bagsOfSpoils = parseInt(util.getLocalStorage(`${APP_PREFIX}BagsOfSpoils`)) || 0;
+let clanGoodieBags = parseInt(util.getLocalStorage(`${APP_PREFIX}ClanGoodieBags`)) || 0;
+let maizeMaze = parseInt(util.getLocalStorage(`${APP_PREFIX}MaizeMaze`)) || 0;
 
 // Find all visible chatboxes on screen
 if (!window.alt1) {
@@ -127,13 +130,17 @@ function readChatbox() {
   // Check if the chat message contains any of the following strings
   const found = [
     chat.indexOf('You open the ') > -1,
+    chat.indexOf('While skilling, you find') > -1,
+    chat.indexOf('You receive:') > -1,
   ];
 
-  const foundReward = found[0];
+  const foundBag = found[0];
+  const foundSkilling = found[1];
+  const foundSpoils = found[2];
   if (found.includes(true)) {
-    if (foundReward) {
-      const regex = /(\[\d+:\d+:\d+\]) You open the (sack of wild rewards|sack of very wild rewards|wyrm reward gland) and receive: \s?((?:\1 \d+ x [\w\s()]+ ?)+)/g
-      const itemRegex = /\[\d+:\d+:\d+\] (\d* x )([A-Za-z\s'\-!()\d]*)/g;
+    if (foundBag) {
+      const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils). and receive: \s?((?:\1 \d+[ x ]?[\w\s()]+ ?)+)/g
+      const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([A-Za-z\s'\-!()\d]*)/g;
       const rewardRegex = new RegExp(regex.source);
       const rewards = chat.match(regex);
       let counter = null;
@@ -143,17 +150,26 @@ function readChatbox() {
         const source = newReward[2];
         const items = newReward[3].match(itemRegex);
         switch (source) {
-          case 'sack of wild rewards':
-            counter = `${APP_PREFIX}WildSackOpened`;
+          case 'bag of spoils':
+            counter = `${APP_PREFIX}BagsOfSpoils`;
             break;
-          case 'sack of very wild rewards':
-            counter = `${APP_PREFIX}VeryWildSackOpened`;
-            break;
-          case 'wyrm reward gland':
-            counter = `${APP_PREFIX}WyrmGlandOpened`;
+          case 'clan goodie bag':
+            counter = `${APP_PREFIX}ClanGoodieBags`;
             break;
         }
         saveMultipleItems(items, itemRegex, source, counter);
+      });
+    } else if (foundSkilling) {
+      const regex = /(\[\d+:\d+:\d+\]) While skilling, you find: ((?:[\w\s()]+)*)/;
+      const reward = chat.match(regex);
+      saveSingleItem(reward[2], regex, 'skilling');
+    } else if (foundSpoils) {
+      const regex = /(\[\d+:\d+:\d+\]) You receive: ((?:[\w\s()]+))/g;
+      const itemRegex = /You receive: ()((?:[\w\s()]+))/;
+      const rewards = chat.match(regex);
+      const filtered = filterItems(rewards, itemRegex);
+      filtered.forEach((reward) => {
+        saveSingleItem(reward, itemRegex, 'maize maze', maizeMaze);
       });
     } else {
       console.warn('Unknown source');
@@ -351,7 +367,7 @@ function showItems() {
   // TODO: Change layout with tabs, so this code can be removed
   switch (display) {
     case 'total': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="wild-sack" title="Click to show all Wild Sack Totals">Reward Item Totals</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="bag-of-spoils" title="Click to show all Bag of Spoils Totals">Reward Item Totals</li>`);
     }
       break;
     case 'history': {
@@ -362,40 +378,40 @@ function showItems() {
     }
       break;
     // CUSTOM: Additional displays for custom sources
-    case 'wild-sack': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="very-wild-sack" title="Click to show all Very Wild Sack Totals">Wild Sack Reward Totals</li>`);
-      total = getTotal('sack of wild rewards');
-      text = 'Wild Sacks Opened';
+    case 'bag-of-spoils': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="clan-goodie-bag" title="Click to show all Clan Goodie Bag Totals">Bag of Spoils Reward Totals</li>`);
+      total = getTotal('bag of spoils');
+      text = 'Bags of Spoils Opened';
     }
       break;
-    case 'very-wild-sack': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="wyrm-gland" title="Click to show all Wyrm Reward Gland Totals">Very Wild Sack Drop Totals</li>`);
-      total = getTotal('sack of very wild rewards');
-      text = 'Very Wild Sacks Opened';
+    case 'clan-goodie-bag': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="maize-maze" title="Click to show all Maize Maze Totals">Clan Goodie Bag Drop Totals</li>`);
+      total = getTotal('clan goodie bag');
+      text = 'Clan Goodie Bags Opened';
     }
       break;
-    case 'wyrm-gland': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Wyrm Reward Gland Totals</li>`);
-      total = getTotal('wyrm reward gland');
-      text = 'Wyrm Glands Opened';
+    case 'maize-maze': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Maize Maze Totals</li>`);
+      total = getTotal('maize maze');
+      text = 'Maize Maze Completed';
     }
       break;
   }
 
   if (showTotals.checked) {
-    let totalRewards = wildSackOpened + veryWildSackOpened + wyrmGlandOpened;
+    let totalRewards = bagsOfSpoils + clanGoodieBags + maizeMaze;
     // CUSTOM: Additional totals for custom sources
     if (display !== 'total' && display !== 'history') {
 
       switch (display) {
-        case 'wild-sack':
-          totalRewards = wildSackOpened;
+        case 'bag-of-spoils':
+          totalRewards = bagsOfSpoils;
           break;
-        case 'very-wild-sack':
-          totalRewards = veryWildSackOpened;
+        case 'clan-goodie-bag':
+          totalRewards = clanGoodieBags;
           break;
-        case 'wyrm-gland':
-          totalRewards = wyrmGlandOpened;
+        case 'maize-maze':
+          totalRewards = maizeMaze;
           break;
       }
     }
@@ -417,14 +433,14 @@ function createExportData(type) {
       str = 'Item,Source,Date,Time\n';
       break;
     // CUSTOM: Additional exports for custom sources
-    case 'wild-sack':
-      total = getTotal('sack of wild rewards');
+    case 'bag-of-spoils':
+      total = getTotal('bag of spoils');
       break;
-    case 'very-wild-sack':
-      total = getTotal('sack of very wild rewards');
+    case 'clan-goodie-bag':
+      total = getTotal('clan goodie bag');
       break;
-    case 'wyrm-gland':
-      total = getTotal('wyrm reward gland');
+    case 'maize-maze':
+      total = getTotal('maize maze');
       break;
     // End custom
     default: {
@@ -471,14 +487,14 @@ $(function () {
         fileName = `${APP_PREFIX}HistoryExport_${downloadDate}.csv`;
         break;
       // CUSTOM: Additional exports names for custom sources
-      case 'wild-sack':
-        fileName = `${APP_PREFIX}WildSackTotalExport_${downloadDate}.csv`;
+      case 'bag-of-spoils':
+        fileName = `${APP_PREFIX}BagOfSpoilsTotalExport_${downloadDate}.csv`;
         break;
-      case 'very-wild-sack':
-        fileName = `${APP_PREFIX}VeryWildSackTotalExport_${downloadDate}.csv`;
+      case 'clan-goodie-bag':
+        fileName = `${APP_PREFIX}ClanGoodieBagTotalExport_${downloadDate}.csv`;
         break;
-      case 'wyrm-gland':
-        fileName = `${APP_PREFIX}WyrmGlandTotalExport_${downloadDate}.csv`;
+      case 'maize-maze':
+        fileName = `${APP_PREFIX}MaizeMazeTotalExport_${downloadDate}.csv`;
         break;
       default:
     }
@@ -495,7 +511,7 @@ $(function () {
     util.deleteLocalStorage(DATA_STORAGE, SELECTED_CHAT, DISPLAY_MODE, `${TOTALS_PREFIX}hide`, `${TOTALS_PREFIX}show`);
     util.deleteSessionStorage(CHAT_SESSION);
     // CUSTOM: Additional storage keys to clear
-    util.deleteLocalStorage(`${APP_PREFIX}WildSackOpened`, `${APP_PREFIX}VeryWildSackOpened`, `${APP_PREFIX}WyrmGlandOpened`);
+    util.deleteLocalStorage(`${APP_PREFIX}BagsOfSpoils`, `${APP_PREFIX}ClanGoodieBags`, `${APP_PREFIX}MaizeMaze`);
     $('#show-totals').prop('checked', true);
 
     location.reload();
@@ -570,26 +586,26 @@ window.addEventListener('storage', function (e) {
     }
       break;
     // CUSTOM: Additional storage keys to check for changes in count
-    case `${APP_PREFIX}WildSackOpened`: {
-      let changedSacks = parseInt(util.getLocalStorage(`${APP_PREFIX}WildSackOpened`));
-      if (wildSackOpened != changedSacks) {
-        wildSackOpened = changedSacks;
+    case `${APP_PREFIX}BagsOfSpoils`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}BagsOfSpoils`));
+      if (bagsOfSpoils != changedItems) {
+        bagsOfSpoils = changedItems;
         dataChanged = true;
       }
     }
       break;
-    case `${APP_PREFIX}VeryWildSackOpened`: {
-      let changedSacks = parseInt(util.getLocalStorage(`${APP_PREFIX}VeryWildSackOpened`));
-      if (veryWildSackOpened != changedSacks) {
-        veryWildSackOpened = changedSacks;
+    case `${APP_PREFIX}ClanGoodieBags`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}ClanGoodieBags`));
+      if (clanGoodieBags != changedItems) {
+        clanGoodieBags = changedItems;
         dataChanged = true;
       }
       break;
     }
-    case `${APP_PREFIX}WyrmGlandOpened`: {
-      let changedSacks = parseInt(util.getLocalStorage(`${APP_PREFIX}WyrmGlandOpened`));
-      if (wyrmGlandOpened != changedSacks) {
-        wyrmGlandOpened = changedSacks;
+    case `${APP_PREFIX}MaizeMaze`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}MaizeMaze`));
+      if (maizeMaze != changedItems) {
+        maizeMaze = changedItems;
         dataChanged = true;
       }
       break;
