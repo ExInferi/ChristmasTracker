@@ -162,10 +162,11 @@ function readChatbox() {
         saveMultipleItems(items, itemRegex, source, counter);
       });
     } else if (foundSkilling) {
-      const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/;
-      const reward = chat.match(regex);
-      console.warn(reward);
+      const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
+      const rewards = chat.match(regex);
+      rewards.forEach((reward) => {
       saveSingleItem(reward[0], regex, 'skilling');
+      });
     } else if (foundSpoils) {
       const regex = /(\[\d+:\d+:\d+\]) You receive: ((?:[\w\s()]+))/g;
       const itemRegex = /You receive: ()((?:[\w\s()]+))/;
