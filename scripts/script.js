@@ -129,14 +129,15 @@ function readChatbox() {
   }
   // Check if the chat message contains any of the following strings
   const found = [
-    chat.indexOf('You open the ') > -1,
+    chat.indexOf('You open the clan goodie bag') > -1,
+    chat.indexOf('You open the bag of spoils') > -1,
     chat.indexOf('While skilling, you find') > -1,
     chat.indexOf('You receive:') > -1,
   ];
 
-  const foundBag = found[0];
-  const foundSkilling = found[1];
-  const foundSpoils = found[2];
+  const foundBag = found[0] || found[1];
+  const foundSkilling = found[2];
+  const foundSpoils = found[3];
   if (found.includes(true)) {
     if (foundBag) {
       const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils). and receive: \s?((?:\1 \d+[ x ]?[\w\s()]+ ?)+)/g
