@@ -132,7 +132,7 @@ function readChatbox() {
   const found = [
     chat.indexOf('You open the clan goodie bag') > -1,
     chat.indexOf('You open the bag of spoils') > -1,
-    chat.indexOf('While skilling, you find') > -1,
+    chat.indexOf('While skilling you find') > -1,
     chat.indexOf('You receive:') > -1,
   ];
 
@@ -162,17 +162,27 @@ function readChatbox() {
         saveMultipleItems(items, itemRegex, source, counter);
       });
     } else if (foundSkilling) {
-      const regex = /(\[\d+:\d+:\d+\]) While skilling, you find: ((?:[\w\s()]+)*)/;
+      const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/;
       const reward = chat.match(regex);
-      saveSingleItem(reward[2], regex, 'skilling');
+      console.warn(reward);
+      saveSingleItem(reward[0], regex, 'skilling');
     } else if (foundSpoils) {
       const regex = /(\[\d+:\d+:\d+\]) You receive: ((?:[\w\s()]+))/g;
       const itemRegex = /You receive: ()((?:[\w\s()]+))/;
+      const rewardRegex = new RegExp(regex.source);
       const rewards = chat.match(regex);
-      const filtered = filterItems(rewards, itemRegex);
-      filtered.forEach((reward) => {
-        saveSingleItem(reward, itemRegex, 'maize maze', maizeMaze);
+      let counter = null;
+
+      rewards.forEach((reward) => {
+        const newReward = reward.match(rewardRegex);
+        const source = newReward[2];
+        const items = newReward[3].match(itemRegex);
+        saveMultipleItems(items, itemRegex, source, counter);
       });
+      // const filtered = filterItems(rewards, itemRegex);
+      // filtered.forEach((reward) => {
+      //   saveSingleItem(reward, itemRegex, 'maize maze', maizeMaze);
+      // });
     } else {
       console.warn('Unknown source');
       return;
@@ -261,6 +271,7 @@ function increaseCounter(counter) {
 
 function saveItem(regex, item, src) {
   // Adjust regex to remove any flags
+  console.log(item)
   const cleanRegex = new RegExp(regex.source);
   if (saveChatHistory.includes(item.trim())) {
     console.debug('Duplicate:', item.trim());
