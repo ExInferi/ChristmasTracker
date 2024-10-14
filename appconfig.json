@@ -1,6 +1,6 @@
 {
-  "appName": "WildyRewards",
-  "description": "Tracks rewards from Wilderness Flash Events. Based on the Seren Tracker by ZeroGwafa",
+  "appName": "HarvestHollowHaul",
+  "description": "Tracks rewards from Harvest Hollow event. Based on the Seren Tracker by ZeroGwafa",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",
   "iconUrl": "./assets/icon.png",
