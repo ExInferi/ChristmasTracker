@@ -168,23 +168,16 @@ function readChatbox() {
       saveSingleItem(reward, regex, 'skilling');
       });
     } else if (foundSpoils) {
-      const regex = /(\[\d+:\d+:\d+\]) You receive: ((?:[\w\s()]+))/g;
-      const itemRegex = /You receive: ()((?:[\w\s()]+))/;
-      const rewardRegex = new RegExp(regex.source);
+      const regex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+))/g;
       const rewards = chat.match(regex);
-      let counter = null;
-
-      rewards.forEach((reward) => {
-        const newReward = reward.match(rewardRegex);
-        const source = newReward[2];
-        const items = newReward[3].match(itemRegex);
-        saveMultipleItems(items, itemRegex, source, counter);
+      let counter = `${APP_PREFIX}MaizeMaze`;
+         
+      const addCount = rewards.map((reward) => {
+        return reward.replace(/You receive: /, 'You receive: 1 x ');
       });
-      // const filtered = filterItems(rewards, itemRegex);
-      // filtered.forEach((reward) => {
-      //   saveSingleItem(reward, itemRegex, 'maize maze', maizeMaze);
-      // });
-    } else {
+   
+      saveMultipleItems(addCount, regex, 'maize maze', counter);
+      } else {
       console.warn('Unknown source');
       return;
     }
@@ -253,6 +246,7 @@ function filterItems(items, regex) {
       saveChatHistory.push(item.trim());
     }
   });
+  console.log(updatedItemsArray);
   return updatedItemsArray;
 }
 
