@@ -161,13 +161,15 @@ function readChatbox() {
         }
         saveMultipleItems(items, itemRegex, source, counter);
       });
-    } else if (foundSkilling) {
+    } 
+    if (foundSkilling) {
       const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
       const rewards = chat.match(regex);
       rewards.forEach((reward) => {
       saveSingleItem(reward, regex, 'skilling');
       });
-    } else if (foundSpoils) {
+    } 
+    if (foundSpoils) {
       const regex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+))/g;
       const rewards = chat.match(regex);
       let counter = `${APP_PREFIX}MaizeMaze`;
@@ -177,9 +179,6 @@ function readChatbox() {
       });
    
       saveMultipleItems(addCount, regex, 'maize maze', counter);
-      } else {
-      console.warn('Unknown source');
-      return;
     }
   }
 }
@@ -246,7 +245,6 @@ function filterItems(items, regex) {
       saveChatHistory.push(item.trim());
     }
   });
-  console.log(updatedItemsArray);
   return updatedItemsArray;
 }
 
@@ -266,7 +264,6 @@ function increaseCounter(counter) {
 
 function saveItem(regex, item, src) {
   // Adjust regex to remove any flags
-  console.log(item)
   const cleanRegex = new RegExp(regex.source);
   if (saveChatHistory.includes(item.trim())) {
     console.debug('Duplicate:', item.trim());
@@ -362,7 +359,7 @@ function createList(total, type) {
 function showItems() {
   let display = util.getLocalStorage(DISPLAY_MODE) || 'history';
   let total = getTotal();
-  let text = 'Total Opened';
+  let text = 'Total Rewards';
   let type = null;
 
   if (display !== 'history') {
@@ -399,29 +396,41 @@ function showItems() {
     }
       break;
     case 'maize-maze': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Maize Maze Totals</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="skilling" title="Click to show all Skilling Totals">Maize Maze Totals</li>`);
       total = getTotal('maize maze');
       text = 'Maize Maze Completed';
+    }
+      break;
+    case 'skilling': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Skilling Totals</li>`);
+      total = getTotal('skilling');
+      text = 'Skilling Rewards Found';
     }
       break;
   }
 
   if (showTotals.checked) {
-    let totalRewards = bagsOfSpoils + clanGoodieBags + maizeMaze;
-    // CUSTOM: Additional totals for custom sources
-    if (display !== 'total' && display !== 'history') {
-
-      switch (display) {
-        case 'bag-of-spoils':
-          totalRewards = bagsOfSpoils;
-          break;
-        case 'clan-goodie-bag':
-          totalRewards = clanGoodieBags;
-          break;
-        case 'maize-maze':
-          totalRewards = maizeMaze;
-          break;
-      }
+    let totalRewards = 0;
+       
+    switch (display) {
+      case "total":
+      case "history":
+        totalRewards = saveData.length;
+        break;
+      // CUSTOM: Additional totals for custom sources
+      case "bag-of-spoils":
+        totalRewards = bagsOfSpoils;
+        break;
+      case "clan-goodie-bag":
+        totalRewards = clanGoodieBags;
+        break;
+      case "maize-maze":
+        totalRewards = maizeMaze;
+        break;
+      case "skilling":
+        let skillingRewards = saveData.filter(item => item.source === 'skilling');
+        totalRewards = skillingRewards.length;
+        break;
     }
 
     displayTotal(text, totalRewards);
@@ -449,6 +458,9 @@ function createExportData(type) {
       break;
     case 'maize-maze':
       total = getTotal('maize maze');
+      break;
+    case 'skilling':
+      total = getTotal('skilling');
       break;
     // End custom
     default: {
@@ -503,6 +515,9 @@ $(function () {
         break;
       case 'maize-maze':
         fileName = `${APP_PREFIX}MaizeMazeTotalExport_${downloadDate}.csv`;
+        break;
+      case 'skilling':
+        fileName = `${APP_PREFIX}SkillingRewardsTotalExport_${downloadDate}.csv`;
         break;
       default:
     }
