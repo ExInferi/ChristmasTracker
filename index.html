@@ -15,10 +15,10 @@
     <link rel="stylesheet" type="text/css" href="https://runeapps.org/nis/nis.css">
     <link rel="stylesheet" type="text/css" href="https://runeapps.org/runeappslib.css">
     <link rel="stylesheet" type="text/css" href="./styles/style.css">
-    <!-- <script type="text/javascript" src="https://runeapps.org/runeappslib.js"></script> -->
     <script src="https://www.unpkg.com/@alt1/base/dist/index.bundle.js"></script>
     <script src="https://www.unpkg.com/@alt1/ocr/dist/index.bundle.js"></script>
     <script src="https://www.unpkg.com/@alt1/chatbox/dist/index.bundle.js"></script>
+    <script src="https://www.unpkg.com/@alt1/tooltip/dist/index.bundle.js"></script>
 </head>
 
 <body class="nis">
@@ -26,13 +26,6 @@
     <ul class="list-group" id="item-list"></ul>
     <div id="switch-menu" class="dropdown clearfix">
         <ul class="context-menu nisborder" role="menu" aria-labelledby="switch-menu">
-            <li data-show="history" title="Show reward history">Reward History</li>
-            <li data-show="total" title="Show reward totals">Reward Totals</li>
-            <!-- CUSTOM: Extra displays-->
-            <li data-show="bag-of-spoils" title="Show bag of spoils totals">Bag of Spoils Totals</li>
-            <li data-show="clan-goodie-bag" title="Show clan goodie bag totals">Clan Goodie Bag Totals</li>
-            <li data-show="maize-maze" title="Show maize maze totals">Maize Maze Totals</li>
-            <li data-show="skilling" title="Show skilling totals">Skilling Totals</li>
         </ul>
     </div>
     <div class="container">
@@ -40,9 +33,6 @@
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <!-- <button class="tracker nisbutton">
-                            Start
-                        </button> -->
                         <button class="nisbutton nissmallbutton" data-toggle="modal" data-target="#settings"
                             type="button">
                             Settings

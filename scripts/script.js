@@ -1,5 +1,5 @@
 import * as util from './utility.js';
-
+import TTReader from './tooltip.js';
 // Enable "Add App" button for Alt1 Browser
 A1lib.identifyApp('appconfig.json');
 
@@ -17,13 +17,87 @@ const COL = [255, 102, 0];
 
 // Additional constants
 const appURL = window.location.href.replace('index.html', '');
-const appColor = A1lib.mixColor(COL[0], COL[1], COL[2]);
+const appColor = A1lib.mixColor(...COL);
 const rgbColor = `rgb(${COL[0]}, ${COL[1]}, ${COL[2]})`;
 const showTotals = document.getElementById('show-totals');
+
+// CUSTOM: Tier colors
+const blueColor = A1lib.mixColor(5, 103, 174);
+const purpleColor = A1lib.mixColor(112, 53, 218);
+const goldColor = A1lib.mixColor(248, 181, 23);
 
 // Reward history optimization
 let currentList = 0;
 const itemsPerList = 25;
+
+// CUSTOM: Source tracking for spoils through tooltips
+const ttReader = new TTReader;
+ttReader.farTooltip = true;
+ttReader.trackinactive = true;
+ttReader.tracking = true;
+ttReader.maxw = 500;
+ttReader.offsetx = 10;
+let delay = alt1.captureInterval < 300 ? alt1.captureInterval : 300;
+
+const spoils = [
+  { id: 'basic-phosphosseous', text: 'Basic Phosphosseous Totals', storage: `${APP_PREFIX}Basic_Phosphosseous_spoils` },
+  { id: 'basic-skaraxxi', text: 'Basic Skaraxxi Totals', storage: `${APP_PREFIX}Basic_Skaraxxi_spoils` },
+  { id: 'basic-solak-o-lantern', text: 'Basic Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Basic_Solak-o'-lantern_spoils` },
+  { id: 'impressive-phosphosseous', text: 'Impressive Phosphosseous Totals', storage: `${APP_PREFIX}Impressive_Phosphosseous_spoils` },
+  { id: 'impressive-skaraxxi', text: 'Impressive Skaraxxi Totals', storage: `${APP_PREFIX}Impressive_Skaraxxi_spoils` },
+  { id: 'impressive-solak-o-lantern', text: 'Impressive Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Impressive_Solak-o'-lantern_spoils` },
+  { id: 'prestigious-phosphosseous', text: 'Prestigious Phosphosseous Totals', storage: `${APP_PREFIX}Prestigious_Phosphosseous_spoils` },
+  { id: 'prestigious-skaraxxi', text: 'Prestigious Skaraxxi Totals', storage: `${APP_PREFIX}Prestigious_Skaraxxi_spoils` },
+  { id: 'prestigious-solak-o-lantern', text: 'Prestigious Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Prestigious_Solak-o'-lantern_spoils` }
+];
+
+const spoilsRegex = /Open\s(.*?spoils)/;
+let currentSpoils = 'bag of spoils';
+let overlayColor = appColor;
+function startTrack() {
+  ttReader.track((state) => {
+    if (state) {
+      let tooltip = state.readInteraction();
+      let text = tooltip.text;
+      if (debugChat) {
+        console.log('Tooltip:', text);
+      }
+      const match = text.match(spoilsRegex);
+      if (match) {
+        if (currentSpoils === match[1].trim()) {
+          return;
+        }
+        alt1.overLayClearGroup('tracking');
+        currentSpoils = match[1].trim();
+        // Set overlay color based on the type of spoils
+        currentSpoils.includes('Basic')
+          ? (overlayColor = blueColor)
+          : currentSpoils.includes('Impressive')
+          ? (overlayColor = purpleColor)
+          : (overlayColor = goldColor);
+        alt1.overLaySetGroup('tracking');
+        alt1.overLayTextEx(
+          `Tracking: ${currentSpoils}`,
+          overlayColor,
+          24,
+          Math.round(alt1.rsWidth / 2),
+          100,
+          1000,
+          'Arial',
+          true,
+          true
+        );
+        alt1.overLayRect(overlayColor, state.area.x - 2, state.area.y - 2, state.area.width + 4, state.area.height + 4, 1000, 2);
+      }
+    }
+  }, delay);
+}
+A1lib.on('alt1pressed', () => {
+  // Toggle tooltip reading in debug mode
+  if (debugChat) {
+  ttReader.tracking ? ttReader.stopTrack() : startTrack();
+  }
+});
 
 let debugChat = false;
 // Set Chat reader
@@ -34,9 +108,9 @@ reader.readargs = {
     A1lib.mixColor(102, 152, 255), // Common reward color (blue)
     A1lib.mixColor(163, 53, 238), // Uncommon reward color (purple)
     A1lib.mixColor(255, 128, 0), // Rare reward color (orange)
-    A1lib.mixColor(5, 103, 174), // Basic spoils (blue)
-    A1lib.mixColor(112, 53, 218),// Impressive spoils (purple)
-    A1lib.mixColor(248, 181, 23), // Prestigious spoils (gold)
+    blueColor, // Basic spoils (blue)
+    purpleColor,// Impressive spoils (purple)
+    goldColor, // Prestigious spoils (gold)
     appColor, // Dark orange text
   ],
   backwards: true,
@@ -50,24 +124,47 @@ let saveChatHistory = util.getSessionStorage(CHAT_SESSION) || [];
 if (!util.getLocalStorage(DISPLAY_MODE)) util.setLocalStorage(DISPLAY_MODE, 'history');
 
 // CUSTOM: Setup additional storage variables
-let bagsOfSpoils = parseInt(util.getLocalStorage(`${APP_PREFIX}BagsOfSpoils`)) || 0;
 let clanGoodieBags = parseInt(util.getLocalStorage(`${APP_PREFIX}ClanGoodieBags`)) || 0;
 let maizeMaze = parseInt(util.getLocalStorage(`${APP_PREFIX}MaizeMaze`)) || 0;
 
+// CUSTOM: Setup storage variables for spoils - reworked
+let basic1 = parseInt(util.getLocalStorage(spoils[0].storage)) || 0;
+let basic2 = parseInt(util.getLocalStorage(spoils[1].storage)) || 0;
+let basic3 = parseInt(util.getLocalStorage(spoils[2].storage)) || 0;
+let impressive1 = parseInt(util.getLocalStorage(spoils[3].storage)) || 0;
+let impressive2 = parseInt(util.getLocalStorage(spoils[4].storage)) || 0;
+let impressive3 = parseInt(util.getLocalStorage(spoils[5].storage)) || 0;
+let prestigious1 = parseInt(util.getLocalStorage(spoils[6].storage)) || 0;
+let prestigious2 = parseInt(util.getLocalStorage(spoils[7].storage)) || 0;
+let prestigious3 = parseInt(util.getLocalStorage(spoils[8].storage)) || 0;
+
+let bagsOfSpoils = basic1 + basic2 + basic3 + impressive1 + impressive2 + impressive3 + prestigious1 + prestigious2 + prestigious3;
+
 // Find all visible chatboxes on screen
 if (!window.alt1) {
-  $('#item-list').html(`<p style="text-indent:1em">Alt1 not detected. <a href='alt1://addapp/${appURL}appconfig.json'>Click here to add the app to Alt1</a></p>`);
+  $('#item-list').html(`<p style="padding-inline:1em">Alt1 not detected. <a href='alt1://addapp/${appURL}appconfig.json'>Click here to add the app to Alt1</a></p>`);
 } else {
-  $('#item-list').html('<p style="text-indent:1em">Searching for chatboxes...</p>');
+  $('#item-list').html('<p style="padding-inline:1em">Searching for chatboxes...</p>');
 }
 window.addEventListener('load', function () {
   if (window.alt1) {
     reader.find();
     reader.read();
+    startTrack();
   }
 })
 
+
 let findChat = setInterval(function () {
+  // Check if localStorage for bagsOfSpoils exist, return if it does
+  if (localStorage.getItem(`${APP_PREFIX}BagsOfSpoils`) !== null) {
+    console.log('reset?')
+    $('#item-list').html(
+      '<p style="padding-inline:1rem;font-size:1.2rem">There have been breaking changes! Please click settings, optionally export to csv, and then hit factory reset.</p>'
+    );
+    util.setLocalStorage(DISPLAY_MODE, 'history')
+    return 
+  }
   if (!window.alt1) {
     clearInterval(findChat);
     return;
@@ -99,6 +196,7 @@ let findChat = setInterval(function () {
 function showSelectedChat(chat) {
   // Attempt to show a temporary rectangle around the chatbox, skip if overlay is not enabled
   try {
+    alt1.overLaySetGroup('chatbox');
     alt1.overLayRect(
       appColor,
       chat.mainbox.rect.x,
@@ -149,11 +247,12 @@ function readChatbox() {
 
       rewards.forEach((reward) => {
         const newReward = reward.match(rewardRegex);
-        const source = newReward[2];
+        let source = newReward[2];
         const items = newReward[3].match(itemRegex);
         switch (source) {
           case 'bag of spoils':
-            counter = `${APP_PREFIX}BagsOfSpoils`;
+            counter = `${APP_PREFIX}${currentSpoils.replace(/ /g, '_')}`;
+            source = currentSpoils;
             break;
           case 'clan goodie bag':
             counter = `${APP_PREFIX}ClanGoodieBags`;
@@ -301,7 +400,7 @@ function saveItem(regex, item, src) {
 function getTotal(source) {
   let total = {};
   saveData.forEach(item => {
-    if (item.source === source || source === undefined) {
+    if (item.source.includes(source) || source === undefined) {
       const data = item.item.split(' x ');
       total[data[1]] = parseInt(total[data[1]]) + parseInt(data[0]) || parseInt(data[0])
     }
@@ -385,7 +484,7 @@ function showItems() {
     // CUSTOM: Additional displays for custom sources
     case 'bag-of-spoils': {
       $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="clan-goodie-bag" title="Click to show all Clan Goodie Bag Totals">Bag of Spoils Reward Totals</li>`);
-      total = getTotal('bag of spoils');
+      total = getTotal('spoils');
       text = 'Bags of Spoils Opened';
     }
       break;
@@ -405,6 +504,61 @@ function showItems() {
       $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Skilling Totals</li>`);
       total = getTotal('skilling');
       text = 'Skilling Rewards Found';
+    }
+      break;
+    // CUSTOM: Additional displays for all individual spoils
+    case 'basic-phosphosseous': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Basic Phosphosseous');
+      text = 'Basic Phosphosseous Totals';
+    }
+      break;
+    case 'basic-skaraxxi': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Basic Skaraxxi');
+      text = 'Basic Skaraxxi Totals';
+    }
+      break;
+    case 'basic-solak-o-lantern': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Basic Solak-o\'-lantern');
+      text = 'Basic Solak-o\'-lantern Totals';
+    }
+      break;
+    case 'impressive-phosphosseous': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Impressive Phosphosseous');
+      text = 'Impressive Phosphosseous Totals';
+    }
+      break;
+    case 'impressive-skaraxxi': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Impressive Skaraxxi');
+      text = 'Impressive Skaraxxi Totals';
+    }
+      break;
+    case 'impressive-solak-o-lantern': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Impressive Solak-o\'-lantern');
+      text = 'Impressive Solak-o\'-lantern Totals';
+    }
+      break;
+    case 'prestigious-phosphosseous': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Prestigious Phosphosseous');
+      text = 'Prestigious Phosphosseous Totals';
+    }
+      break;
+    case 'prestigious-skaraxxi': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Prestigious Skaraxxi');
+      text = 'Prestigious Skaraxxi Totals';
+    }
+      break;
+    case 'prestigious-solak-o-lantern': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      total = getTotal('Prestigious Solak-o\'-lantern');
+      text = 'Prestigious Solak-o\'-lantern Totals';
     }
       break;
   }
@@ -431,6 +585,34 @@ function showItems() {
         let skillingRewards = saveData.filter(item => item.source === 'skilling');
         totalRewards = skillingRewards.length;
         break;
+      // CUSTOM: Additional totals for all individual spoils
+      case "basic-phosphosseous":
+        totalRewards = basic1;
+        break;
+      case "basic-skaraxxi":
+        totalRewards = basic2;
+        break;
+      case "basic-solak-o-lantern":
+        totalRewards = basic3;
+        break;
+      case "impressive-phosphosseous":
+        totalRewards = impressive1;
+        break;
+      case "impressive-skaraxxi":
+        totalRewards = impressive2;
+        break;
+      case "impressive-solak-o-lantern":
+        totalRewards = impressive3;
+        break;
+      case "prestigious-phosphosseous":
+        totalRewards = prestigious1;
+        break;
+      case "prestigious-skaraxxi":
+        totalRewards = prestigious2;
+        break;
+      case "prestigious-solak-o-lantern":
+        totalRewards = prestigious3;
+        break;
     }
 
     displayTotal(text, totalRewards);
@@ -451,7 +633,7 @@ function createExportData(type) {
       break;
     // CUSTOM: Additional exports for custom sources
     case 'bag-of-spoils':
-      total = getTotal('bag of spoils');
+      total = getTotal('spoils');
       break;
     case 'clan-goodie-bag':
       total = getTotal('clan goodie bag');
@@ -461,6 +643,34 @@ function createExportData(type) {
       break;
     case 'skilling':
       total = getTotal('skilling');
+      break;
+    // CUSTOM: Additional exports for all individual spoils
+    case 'basic-phosphosseous':
+      total = getTotal('Basic Phosphosseous');
+      break;
+    case 'basic-skaraxxi':
+      total = getTotal('Basic Skaraxxi');
+      break;
+    case 'basic-solak-o-lantern':
+      total = getTotal('Basic Solak-o\'-lantern');
+      break;
+    case 'impressive-phosphosseous':
+      total = getTotal('Impressive Phosphosseous');
+      break;
+    case 'impressive-skaraxxi':
+      total = getTotal('Impressive Skaraxxi');
+      break;
+    case 'impressive-solak-o-lantern':
+      total = getTotal('Impressive Solak-o\'-lantern');
+      break;
+    case 'prestigious-phosphosseous':
+      total = getTotal('Prestigious Phosphosseous');
+      break;
+    case 'prestigious-skaraxxi':
+      total = getTotal('Prestigious Skaraxxi');
+      break;
+    case 'prestigious-solak-o-lantern':
+      total = getTotal('Prestigious Solak-o\'-lantern');
       break;
     // End custom
     default: {
@@ -521,7 +731,12 @@ $(function () {
         break;
       default:
     }
-
+    // CUSTOM: Additional export names for all individual spoils
+    spoils.forEach(spoil => {
+      if (display === spoil.id) {
+        fileName = `${APP_PREFIX}${spoils[0].text.replace(/ /g, '_')}TotalExport_${downloadDate}.csv`;
+      }
+    });
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8;'
     });
@@ -535,6 +750,9 @@ $(function () {
     util.deleteSessionStorage(CHAT_SESSION);
     // CUSTOM: Additional storage keys to clear
     util.deleteLocalStorage(`${APP_PREFIX}BagsOfSpoils`, `${APP_PREFIX}ClanGoodieBags`, `${APP_PREFIX}MaizeMaze`);
+    spoils.forEach(spoil => {
+      util.deleteLocalStorage(spoil.storage);
+    });
     $('#show-totals').prop('checked', true);
 
     location.reload();
@@ -548,6 +766,18 @@ $(function () {
 
   // Right-click to change display mode
   const $displaySelect = $('#switch-menu');
+  // Add display options
+  $displaySelect.find('ul').append(`
+    <li data-show="history" title="Show reward history">Reward History</li>
+    <li data-show="total" title="Show reward totals">Reward Totals</li>
+    <li data-show="bag-of-spoils" title="Show bag of spoils totals">Bag of Spoils Totals</li>
+    <li data-show="clan-goodie-bag" title="Show clan goodie bag totals">Clan Goodie Bag Totals</li>
+    <li data-show="maize-maze" title="Show maize maze totals">Maize Maze Totals</li>
+    <li data-show="skilling" title="Show skilling totals">Skilling Totals</li>
+  `);
+  spoils.forEach(spoil => {
+    $displaySelect.find('ul').append(`<li data-show="${spoil.id}" title="Show ${spoil.text}">${spoil.text}</li>`);
+  });
 
   $(document).on('contextmenu', '#switch-display', function (e) {
     e.preventDefault();
@@ -633,6 +863,79 @@ window.addEventListener('storage', function (e) {
       }
       break;
     }
+    // CUSTOM: Additional tracking for all individual spoils
+    case spoils[0].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[0].storage));
+      if (basic1 != changedItems) {
+        basic1 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[1].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[1].storage));
+      if (basic2 != changedItems) {
+        basic2 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[2].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[2].storage));
+      if (basic3 != changedItems) {
+        basic3 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[3].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[3].storage));
+      if (impressive1 != changedItems) {
+        impressive1 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[4].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[4].storage));
+      if (impressive2 != changedItems) {
+        impressive2 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[5].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[5].storage));
+      if (impressive3 != changedItems) {
+        impressive3 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[6].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[6].storage));
+      if (prestigious1 != changedItems) {
+        prestigious1 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[7].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[7].storage));
+      if (prestigious2 != changedItems) {
+        prestigious2 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
+    case spoils[8].storage: {
+      let changedItems = parseInt(util.getLocalStorage(spoils[8].storage));
+      if (prestigious3 != changedItems) {
+        prestigious3 = changedItems;
+        dataChanged = true;
+      }
+    }
+      break;
   }
 
   if (dataChanged) {
@@ -652,9 +955,6 @@ window.addEventListener('storage', function (e) {
     showItems();
   }
 });
-
-// Force read chatbox
-A1lib.on('alt1pressed', readChatbox);
 
 // DEBUG: Show chat history
 window.toggleChat = () => {

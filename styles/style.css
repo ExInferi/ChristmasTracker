@@ -124,6 +124,8 @@ h6 {
     border-radius: .5em;
     width: fit-content;
     /* cursor: default; */
+    max-height: 75vh;
+    overflow-y: auto;
 }
 
 .context-menu li {
