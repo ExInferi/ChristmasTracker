@@ -1,43 +1,53 @@
-# WildyRewards
+# HarvestHollowHaul
 
 [Based on ZeroGwafa's Seren Tracker](https://github.com/ZeroGwafa/SerenTracker/tree/master)
 
-For those of you who want to track the loot from Wilderness Flash Events, I reworked the Seren Tracker to work for the Sack of (very) wild rewards and Wyrm reward gland.
+For those of you who want to track the loot from Harvest Hollow, I reworked the Seren Tracker to work for several rewards obtained during this seasonal Halloween event.
+
+It tracks the following: 
+- Spoils received at Maize Maze
+- Loot from spoils and clan goodie bags
+- Items found when skilling throughout Gielinor
 
 ![example](/assets/example.png)
 
-## How to install
+## How to install - currently in beta, check link in [updates](#updates)
 
-Go to [the app](https://exinferi.nl/apps/wildy) in your browser and click the link, or:
+Go to [the app](https://exinferi.nl/apps/hhh) in your browser and click the link, or:
 
 1. Go to the browser inside Alt1 toolkit
-2. Visit `https://exinferi.nl/apps/wildy`
+2. Visit `https://exinferi.nl/apps/hhh`
 3. Hit the yellow 'add app' button in the upper right corner.
 
+The app needs the following permissions: Pixel, Gamestate and Overlay.  
 **Make sure to turn chatfilter off and turn timestamps on!**
 
 Have fun tracking!
 
 ## Known issues  
 
-* May behave odd with size 10 chat.
+* May behave odd with different chat sizes than 12.
+* Reward history display is a bit funky when there's less than 25 items to display.
 
 ## Updates
 
-**Update 28 Aug 2024, 13:10 Game Time**:
+**Update 16 Oct 2024, 20:00 Game Time**:
 
-* Released a potential fix for duplicate items being logged after coins were added to pouch.
+* **Breaking change**: Introduced source tracking for each individual type of spoils:
+  * This works by tracking the tooltip when opening the bags with the mouse. So please, click the bags and don't keybind them 😇
+  * The tracked source is being displayed on screen if overlay is enabled for the app. Don't open until you see this display, otherwise the source may be wrong!
+  * You can check the data for the sources by using the right-click context-menu on the header:
+  ![context menu](/assets/contextmenu.png)
+* Fixed a lot of minor processing bux yesterday.
 
-**Update 27 Aug 2024, 19:40 Game Time**:
+**Update 14 Oct 2024, 14:00 Game Time**:
 
-* Release!
-* The reward history only loads 25 items at a time to improve performance when a lot of rewards have been captured.
-  * *Click the "load more" button at the bottom of the list to expand.*
-* The top button can now be right clicked to quickly navigate rather than having to keep cycling with the left click.
-  ![context menu](/assets/contextmenu.png)  
-  *Left click still works for cycling, though.*
+* [Beta release!](https://exinferi.github.io/HarvestHollowHaul/)
 
 ## Special thanks
 
 [ZeroGwafa](https://github.com/ZeroGwafa) for creating the tracker(s) this was based on  
-[AuditorVorkosigan](https://github.com/AuditorVorkosigan) for beta testing and debugging
+[AuditorVorkosigan](https://github.com/AuditorVorkosigan) for beta testing and debugging  
+[Skillbert](https://github.com/skillbert) & [OP Tech](https://github.com/Techpure2013) for leading me towards the needed adjustments  
+And of course all my lovely clannies in [Lootbeams](https://runepixels.com/clans/lootbeams/about) that helped spot issues with the beta 💜
+
