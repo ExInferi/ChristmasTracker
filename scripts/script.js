@@ -98,7 +98,7 @@ A1lib.on('alt1pressed', () => {
   ttReader.tracking ? ttReader.stopTrack() : startTrack();
   }
 });
-
+// TODO: Titlebar img + title. function?
 let debugChat = false;
 // Set Chat reader
 let reader = new Chatbox.default();
@@ -331,8 +331,12 @@ function filterItems(items, regex) {
       const itemName = match[2].trim();
       const totalQuantity = filteredItemsMap[itemName];
       // Replace the quantity in the original string
-      return itemString.replace(/(?: x (\d+))|(?:(\d+) x )/, (match, group1, group2) => {
-        const digit = group1 || group2;
+      return itemString.replace(/(?: x (\d+))|(?:(\d+) x )|(\d+)\s+/, (match, group1, group2, group3) => {
+        const digit = group1 || group2 || group3;
+        if (debugChat) {
+          console.debug('group1', group1, 'group2', group2, 'group3', group3);
+          console.log('Replaced:',digit, totalQuantity, match.replace(digit, totalQuantity));
+        }
         return match.replace(digit, totalQuantity);
       });
     }
