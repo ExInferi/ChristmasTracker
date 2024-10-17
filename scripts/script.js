@@ -231,8 +231,8 @@ function readChatbox() {
   const foundSpoils = found[3];
   if (found.includes(true)) {
     if (foundBag) {
-      const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils)\.? and receive: \s?((?:\1 \d+[ x ]?[\w\s'\-!()\d]+ ?)+)/g
-      const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'\-!()\d]*)/g;
+      const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils)\.? and receive: \s?((?:\1 \d+[ x ]?[\w\s'+\-!()\d]+ ?)+)/g
+      const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+\-!()\d]*)/g;
       const rewardRegex = new RegExp(regex.source);
       const rewards = chat.match(regex);
       let counter = null;
