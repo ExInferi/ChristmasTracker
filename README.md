@@ -11,6 +11,17 @@ It tracks the following:
 
 ![example](/assets/example.png)
 
+When the app detects spoils by reading the tooltip, it updates the Alt1 Toolbar with icons representing the detected type of spoils.
+You can hover over these icons to see a descriptive text:  
+![toolbar example](/assets/toolbar.png)
+
+**Legend for spoils icons:** 
+|Left to right |=>|![x](/assets/toolbar-icons.png)|
+|:---: | :---: | :---: |
+| Basic | Impressive | Prestigious |
+| Phosphosseus | Skaraxxi | Solak-o'-lantern
+
+
 ## How to install - currently in beta, check link in [updates](#updates)
 
 Go to [the app](https://exinferi.nl/apps/hhh) in your browser and click the link, or:
@@ -30,6 +41,11 @@ Have fun tracking!
 * Reward history display is a bit funky when there's less than 25 items to display.
 
 ## Updates
+
+**Update 17 Oct 2024, 17:30 Game Time**:
+
+* Fixed double spooky token drops not being properly added together.
+* Added an Alt1 toolbar message of which spoils it has detected (requires overlay permission).
 
 **Update 16 Oct 2024, 20:00 Game Time**:
 
