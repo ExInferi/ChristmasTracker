@@ -99,7 +99,7 @@ A1lib.on('alt1pressed', () => {
   ttReader.tracking ? ttReader.stopTrack() : startTrack();
   }
 });
-
+// TODO: Titlebar img + title. function?
 let debugChat = false;
 // Set Chat reader
 let reader = new Chatbox.default();
