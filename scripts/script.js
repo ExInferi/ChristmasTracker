@@ -37,7 +37,7 @@ ttReader.trackinactive = true;
 ttReader.tracking = true;
 ttReader.maxw = 500;
 ttReader.offsetx = 10;
-let delay = alt1.captureInterval < 300 ? alt1.captureInterval : 300;
+let delay = 300;
 
 const spoils = [
   { id: 'basic-phosphosseous', text: 'Basic Phosphosseous Totals', storage: `${APP_PREFIX}Basic_Phosphosseous_spoils` },
@@ -157,15 +157,6 @@ window.addEventListener('load', function () {
 
 
 let findChat = setInterval(function () {
-  // Check if localStorage for bagsOfSpoils exist, return if it does
-  if (localStorage.getItem(`${APP_PREFIX}BagsOfSpoils`) !== null) {
-    console.log('reset?')
-    $('#item-list').html(
-      '<p style="padding-inline:1rem;font-size:1.2rem">There have been breaking changes! Please click settings, optionally export to csv, and then hit factory reset.</p>'
-    );
-    util.setLocalStorage(DISPLAY_MODE, 'history')
-    return 
-  }
   if (!window.alt1) {
     clearInterval(findChat);
     return;
@@ -513,55 +504,55 @@ function showItems() {
       break;
     // CUSTOM: Additional displays for all individual spoils
     case 'basic-phosphosseous': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Basic Phosphosseous');
       text = 'Basic Phosphosseous Totals';
     }
       break;
     case 'basic-skaraxxi': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Basic Skaraxxi');
       text = 'Basic Skaraxxi Totals';
     }
       break;
     case 'basic-solak-o-lantern': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Basic Solak-o\'-lantern');
       text = 'Basic Solak-o\'-lantern Totals';
     }
       break;
     case 'impressive-phosphosseous': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Impressive Phosphosseous');
       text = 'Impressive Phosphosseous Totals';
     }
       break;
     case 'impressive-skaraxxi': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Impressive Skaraxxi');
       text = 'Impressive Skaraxxi Totals';
     }
       break;
     case 'impressive-solak-o-lantern': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Impressive Solak-o\'-lantern');
       text = 'Impressive Solak-o\'-lantern Totals';
     }
       break;
     case 'prestigious-phosphosseous': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Prestigious Phosphosseous');
       text = 'Prestigious Phosphosseous Totals';
     }
       break;
     case 'prestigious-skaraxxi': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Prestigious Skaraxxi');
       text = 'Prestigious Skaraxxi Totals';
     }
       break;
     case 'prestigious-solak-o-lantern': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="total" title="Click to show all Reward Totals">Right-click to switch display</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
       total = getTotal('Prestigious Solak-o\'-lantern');
       text = 'Prestigious Solak-o\'-lantern Totals';
     }
@@ -754,7 +745,7 @@ $(function () {
     util.deleteLocalStorage(DATA_STORAGE, SELECTED_CHAT, DISPLAY_MODE, `${TOTALS_PREFIX}hide`, `${TOTALS_PREFIX}show`);
     util.deleteSessionStorage(CHAT_SESSION);
     // CUSTOM: Additional storage keys to clear
-    util.deleteLocalStorage(`${APP_PREFIX}BagsOfSpoils`, `${APP_PREFIX}ClanGoodieBags`, `${APP_PREFIX}MaizeMaze`);
+    util.deleteLocalStorage(`${APP_PREFIX}ClanGoodieBags`, `${APP_PREFIX}MaizeMaze`);
     spoils.forEach(spoil => {
       util.deleteLocalStorage(spoil.storage);
     });
@@ -844,14 +835,6 @@ window.addEventListener('storage', function (e) {
     }
       break;
     // CUSTOM: Additional storage keys to check for changes in count
-    case `${APP_PREFIX}BagsOfSpoils`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}BagsOfSpoils`));
-      if (bagsOfSpoils != changedItems) {
-        bagsOfSpoils = changedItems;
-        dataChanged = true;
-      }
-    }
-      break;
     case `${APP_PREFIX}ClanGoodieBags`: {
       let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}ClanGoodieBags`));
       if (clanGoodieBags != changedItems) {

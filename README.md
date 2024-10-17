@@ -22,7 +22,7 @@ You can hover over these icons to see a descriptive text:
 | Phosphosseus | Skaraxxi | Solak-o'-lantern
 
 
-## How to install - currently in beta, check link in [updates](#updates)
+## How to install
 
 Go to [the app](https://exinferi.nl/apps/hhh) in your browser and click the link, or:
 
@@ -39,8 +39,13 @@ Have fun tracking!
 
 * May behave odd with different chat sizes than 12.
 * Reward history display is a bit funky when there's less than 25 items to display.
+* When opened on multiple clients, the toolbar display on all clients shows the most recently detected spoils from the last used client.
 
 ## Updates
+
+**Update 17 Oct 2024, 20:00 Game Time**:
+
+* Official release! If new issues are discovered, the beta version will still be used for testing potential fixes.
 
 **Update 17 Oct 2024, 17:30 Game Time**:
 

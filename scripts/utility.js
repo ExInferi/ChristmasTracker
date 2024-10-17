@@ -100,11 +100,11 @@ function downloadFile(blob, filename) {
 // Set titlebar for Alt1
 function setTitleBar(title, icon1 = null, icon2 = null, text = null) {
     let titlebar = `<span title='${title}'>`
-    if (icon1) titlebar += `<img src='../assets/${icon1}.png'/> `; 
+    if (icon1) titlebar += ` <img src='./assets/${icon1}.png'/> `; 
     if (text) titlebar += text;
-    if (icon2) titlebar += ` <img src='../assets/${icon2}.png'/>`;
+    if (icon2) titlebar += ` <img src='./assets/${icon2}.png'/> `;
     titlebar += `</span>`;
-    alt1.setTitleBarText(titlebar);
+    window.alt1?.setTitleBarText(titlebar);
 }
 
 export {
