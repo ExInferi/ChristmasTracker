@@ -51,9 +51,16 @@ const spoils = [
   { id: 'prestigious-solak-o-lantern', text: 'Prestigious Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Prestigious_Solak-o'-lantern_spoils` }
 ];
 
-const spoilsRegex = /Open\s(.*?spoils)/;
+const spoilsRegex = /Open\s(.*?\sspoils)/;
 let currentSpoils = 'bag of spoils';
 let overlayColor = appColor;
+// Default titlebar state
+util.setTitleBar('Currently not tracking any spoils.', 'icon', 'icon', 'No spoils detected');
+// Clear titlebar on reload/exit
+$(window).bind('beforeunload', () => {
+  util.setTitleBar('', null, null, '');
+});
+
 function startTrack() {
   ttReader.track((state) => {
     if (state) {
@@ -69,24 +76,18 @@ function startTrack() {
         }
         alt1.overLayClearGroup('tracking');
         currentSpoils = match[1].trim();
-        // Set overlay color based on the type of spoils
-        currentSpoils.includes('Basic')
-          ? (overlayColor = blueColor)
-          : currentSpoils.includes('Impressive')
-          ? (overlayColor = purpleColor)
-          : (overlayColor = goldColor);
+        const width = Math.round(alt1.rsWidth / 2);
+        // Set overlay color and titlebar based on the type of spoils
+        const spoilsType = /(B.*|I.*|P.*)\s(Ph.*|Sk.*|So.*)\sspoils/;
+        const typeMatch = currentSpoils.match(spoilsType);
+        if (typeMatch[1] === 'Basic') overlayColor = blueColor;
+        else if (typeMatch[1] === 'Impressive') overlayColor = purpleColor;
+        else if (typeMatch[1] === 'Prestigious') overlayColor = goldColor;
+        // Update the titlebar with current spoils type icons
+        util.setTitleBar(`Tracking: ${currentSpoils}`, typeMatch[1], typeMatch[2]);
+        // Set overlay text and rectangle for tooltip
         alt1.overLaySetGroup('tracking');
-        alt1.overLayTextEx(
-          `Tracking: ${currentSpoils}`,
-          overlayColor,
-          24,
-          Math.round(alt1.rsWidth / 2),
-          100,
-          1000,
-          'Arial',
-          true,
-          true
-        );
+        alt1.overLayTextEx(`Tracking: ${currentSpoils}`, overlayColor, 24, width, 100, 1000, 'Arial', true, true);
         alt1.overLayRect(overlayColor, state.area.x - 2, state.area.y - 2, state.area.width + 4, state.area.height + 4, 1000, 2);
       }
     }
@@ -98,7 +99,7 @@ A1lib.on('alt1pressed', () => {
   ttReader.tracking ? ttReader.stopTrack() : startTrack();
   }
 });
-// TODO: Titlebar img + title. function?
+
 let debugChat = false;
 // Set Chat reader
 let reader = new Chatbox.default();
