@@ -250,6 +250,7 @@ export default class TTReader {
             [235, 224, 188], // The white interaction
             [184, 209, 209], // F2P item
             [248, 213, 107], // member item
+            [0, 255, 255], // item interaction
             [255, 255, 0], //npc
         ];
         //throw "not completely implemented. OCR only supports one colors at a time";
