@@ -37,7 +37,7 @@ ttReader.trackinactive = true;
 ttReader.tracking = true;
 ttReader.maxw = 500;
 ttReader.offsetx = 10;
-let delay = alt1.captureInterval < 300 ? alt1.captureInterval : 300;
+let delay = 300;
 
 const spoils = [
   { id: 'basic-phosphosseous', text: 'Basic Phosphosseous Totals', storage: `${APP_PREFIX}Basic_Phosphosseous_spoils` },
