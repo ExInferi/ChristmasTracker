@@ -72,3 +72,10 @@ Have fun tracking!
 [Skillbert](https://github.com/skillbert) & [OP Tech](https://github.com/Techpure2013) for leading me towards the needed adjustments  
 And of course all my lovely clannies in [Lootbeams](https://runepixels.com/clans/lootbeams/about) that helped spot issues with the beta 💜
 
+## My other apps
+
+[WilyRewards](https://github.com/ExInferi/WildyRewards): Wilderness Flash Event Rewards Tracker  
+[BeachTracker](https://github.com/ExInferi/BeachTracker): Beach 2024 Rewards Tracker - archived  
+[PumpkinTracker](https://github.com/ExInferi/PumpkinTracker): Halloween 2023 Smashing/Party Pumkin Rewards Tracker  
+[Tax Calculator](https://runeapps.org/forums/viewtopic.php?id=1508): Basic app to calculate the tax you have to pay at any given value  
+[DgTracker](https://runeapps.org/forums/viewtopic.php?id=1452): Manual tracking of key doors, gatestones and boss rooms for dungeoneering floors
