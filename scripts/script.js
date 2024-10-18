@@ -256,9 +256,12 @@ function readChatbox() {
     if (foundSkilling) {
       const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
       const rewards = chat.match(regex);
-      rewards.forEach((reward) => {
-      saveSingleItem(reward, regex, 'skilling');
+
+      const addCount = rewards.map((reward) => {
+        return reward.replace(/While skilling you find:\s(?!\d+\sx)/, 'While skilling you find: 1 x ');
       });
+
+      saveMultipleItems(addCount, regex, 'skilling');
     } 
     if (foundSpoils) {
       const regex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+spoils))/g;
@@ -284,7 +287,7 @@ function saveSingleItem(match, regex, source, counter) {
 }
 
 // In case of possible multiple items, save them all
-function saveMultipleItems(match, regex, source, counter) {
+function saveMultipleItems(match, regex, source, counter = null) {
   const filtered = filterItems(match, regex);
   const alreadySaved = filtered.some(item => saveChatHistory.includes(item.trim()));
 
