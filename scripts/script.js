@@ -261,12 +261,12 @@ function readChatbox() {
       });
     } 
     if (foundSpoils) {
-      const regex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+))/g;
+      const regex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+spoils))/g;
       const rewards = chat.match(regex);
       let counter = `${APP_PREFIX}MaizeMaze`;
          
       const addCount = rewards.map((reward) => {
-        return reward.replace(/You receive: /, 'You receive: 1 x ');
+        return reward.replace(/You receive:\s(?!\d+\sx)/, 'You receive: 1 x ');
       });
    
       saveMultipleItems(addCount, regex, 'maize maze', counter);
