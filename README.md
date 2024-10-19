@@ -21,18 +21,6 @@ You can hover over these icons to see a descriptive text:
 | Basic | Impressive | Prestigious |
 | Phosphosseus | Skaraxxi | Solak-o'-lantern
 
-
-When the app detects spoils by reading the tooltip, it updates the Alt1 Toolbar with icons representing the detected type of spoils.
-You can hover over these icons to see a descriptive text:  
-![toolbar example](/assets/toolbar.png)
-
-**Legend for spoils icons:** 
-|Left to right |=>|![x](/assets/toolbar-icons.png)|
-|:---: | :---: | :---: |
-| Basic | Impressive | Prestigious |
-| Phosphosseus | Skaraxxi | Solak-o'-lantern
-
-
 ## How to install
 
 Go to [the app](https://exinferi.nl/apps/hhh) in your browser and click the link, or:
