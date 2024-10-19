@@ -254,25 +254,32 @@ function readChatbox() {
       });
     } 
     if (foundSkilling) {
-      const regex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
+      const regex = /(\[\d+:\d+:\d+\]) While skilling you find: [^[]*(?:\1 While*[^[]*)*/g;
+      const itemRegex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
       const rewards = chat.match(regex);
 
-      const addCount = rewards.map((reward) => {
-        return reward.replace(/While skilling you find:\s(?!\d+\sx)/, 'While skilling you find: 1 x ');
+      const addCount = rewards.flatMap((reward) => {
+        const matches = reward.match(itemRegex);
+        return matches.map((match) => {
+          return match.replace(/While skilling you find:\s(?!\d+\sx)/g, 'While skilling you find: 1 x ');
+        });
       });
-
-      saveMultipleItems(addCount, regex, 'skilling');
+      saveMultipleItems(addCount, itemRegex, 'skilling');
     } 
     if (foundSpoils) {
-      const regex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+spoils))/g;
+      const regex = /(\[\d+:\d+:\d+\]) You receive: .*spoils\s+(?:\1.*spoils)/g;
+      const itemRegex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+spoils))/g;
       const rewards = chat.match(regex);
       let counter = `${APP_PREFIX}MaizeMaze`;
-         
-      const addCount = rewards.map((reward) => {
-        return reward.replace(/You receive:\s(?!\d+\sx)/, 'You receive: 1 x ');
+ 
+      const addCount = rewards.flatMap((reward) => {
+        const matches = reward.match(itemRegex);
+        return matches.map((match) => {
+          return match.replace(/You receive:\s(?!\d+\sx)/g, 'You receive: 1 x ');
+        });
       });
-   
-      saveMultipleItems(addCount, regex, 'maize maze', counter);
+
+      saveMultipleItems(addCount, itemRegex, 'maize maze', counter);
     }
   }
 }
