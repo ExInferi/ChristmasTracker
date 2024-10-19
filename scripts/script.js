@@ -949,6 +949,8 @@ window.addEventListener('storage', function (e) {
       default:
         console.debug('Local Storage changed:', `${e.key}, ${e.oldValue} -> ${e.newValue}`);
     }
+    // CUSTOM: Update bags of spoils count
+    bagsOfSpoils = basic1 + basic2 + basic3 + impressive1 + impressive2 + impressive3 + prestigious1 + prestigious2 + prestigious3;
     currentList = 0;
     showItems();
   }
