@@ -54,6 +54,13 @@ Have fun tracking!
 
 ## Updates
 
+**Update 19 Oct 2024, 13:30 Game Time**:
+
+* Fixed the total bag of spoils rewards display not being updated live when opening spoils.
+* Fixed an [issue][/../../issues/3] with Weapon Poison++ breaking capture.
+* Fixed an [issue][/../../issues/4] with edge case of having the same skilling reward in the same tick.
+* Fixed an [issue][/../../issues/5] with rewards other than spoils being logged as Maize Maze rewards.
+
 **Update 17 Oct 2024, 20:00 Game Time**:
 
 * Official release! If new issues are discovered, the beta version will still be used for testing potential fixes.
