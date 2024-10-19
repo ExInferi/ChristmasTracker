@@ -22,6 +22,17 @@ You can hover over these icons to see a descriptive text:
 | Phosphosseus | Skaraxxi | Solak-o'-lantern
 
 
+When the app detects spoils by reading the tooltip, it updates the Alt1 Toolbar with icons representing the detected type of spoils.
+You can hover over these icons to see a descriptive text:  
+![toolbar example](/assets/toolbar.png)
+
+**Legend for spoils icons:** 
+|Left to right |=>|![x](/assets/toolbar-icons.png)|
+|:---: | :---: | :---: |
+| Basic | Impressive | Prestigious |
+| Phosphosseus | Skaraxxi | Solak-o'-lantern
+
+
 ## How to install
 
 Go to [the app](https://exinferi.nl/apps/hhh) in your browser and click the link, or:
@@ -42,6 +53,13 @@ Have fun tracking!
 * When opened on multiple clients, the toolbar display on all clients shows the most recently detected spoils from the last used client.
 
 ## Updates
+
+**Update 19 Oct 2024, 13:30 Game Time**:
+
+* Fixed the total bag of spoils rewards display not being updated live when opening spoils.
+* Fixed an [issue][/../../issues/3] with Weapon Poison++ breaking capture.
+* Fixed an [issue][/../../issues/4] with edge case of having the same skilling reward in the same tick.
+* Fixed an [issue][/../../issues/5] with rewards other than spoils being logged as Maize Maze rewards.
 
 **Update 17 Oct 2024, 20:00 Game Time**:
 
