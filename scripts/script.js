@@ -268,7 +268,7 @@ function readChatbox() {
     } 
     if (foundSpoils) {
       const regex = /(\[\d+:\d+:\d+\]) You receive: .*spoils\s+(?:\1.*spoils)/g;
-      const itemRegex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()]+spoils))/g;
+      const itemRegex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()'-]+spoils))/g;
       const rewards = chat.match(regex);
       let counter = `${APP_PREFIX}MaizeMaze`;
  
