@@ -42,6 +42,10 @@ Have fun tracking!
 
 ## Updates
 
+**Update 28 Oct 2024, 0:30 Game Time**:
+* Fixed issues with updating toolbar with Solak-o'-lantern spoils.
+* Fixed issues with counting Solak-o'-lantern spoils drop from Maize Maze.
+
 **Update 19 Oct 2024, 13:30 Game Time**:
 
 * Fixed the total bag of spoils rewards display not being updated live when opening spoils.
