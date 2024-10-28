@@ -84,7 +84,7 @@ function startTrack() {
         else if (typeMatch[1] === 'Impressive') overlayColor = purpleColor;
         else if (typeMatch[1] === 'Prestigious') overlayColor = goldColor;
         // Update the titlebar with current spoils type icons
-        util.setTitleBar(`Tracking: ${currentSpoils}`, typeMatch[1], typeMatch[2]);
+        util.setTitleBar(`Tracking: ${currentSpoils.replace(/-/g, ' ')}`, typeMatch[1], typeMatch[2].replace(/-/g, '_'));
         // Set overlay text and rectangle for tooltip
         alt1.overLaySetGroup('tracking');
         alt1.overLayTextEx(`Tracking: ${currentSpoils}`, overlayColor, 24, width, 100, 1000, 'Arial', true, true);
