@@ -43,7 +43,7 @@ Have fun tracking!
 ## Updates
 
 **Update 29 Oct 2024, 11:30 Game Time**:
-* Updated library to fix the issues occuring after yesterday's game update.
+* Updated library to fix the issues occurring after yesterday's game update.
 
 **Update 28 Oct 2024, 0:30 Game Time**:
 * Fixed issues with updating toolbar with Solak-o'-lantern spoils.
@@ -87,8 +87,8 @@ And of course all my lovely clannies in [Lootbeams](https://runepixels.com/clans
 
 ## My other apps
 
-[WilyRewards](https://github.com/ExInferi/WildyRewards): Wilderness Flash Event Rewards Tracker  
+[WildyRewards](https://github.com/ExInferi/WildyRewards): Wilderness Flash Event Rewards Tracker  
 [BeachTracker](https://github.com/ExInferi/BeachTracker): Beach 2024 Rewards Tracker - archived  
-[PumpkinTracker](https://github.com/ExInferi/PumpkinTracker): Halloween 2023 Smashing/Party Pumkin Rewards Tracker  
+[PumpkinTracker](https://github.com/ExInferi/PumpkinTracker): Halloween 2023 Smashing/Party Pumkin Rewards Tracker - archived  
 [Tax Calculator](https://runeapps.org/forums/viewtopic.php?id=1508): Basic app to calculate the tax you have to pay at any given value  
 [DgTracker](https://runeapps.org/forums/viewtopic.php?id=1452): Manual tracking of key doors, gatestones and boss rooms for dungeoneering floors
