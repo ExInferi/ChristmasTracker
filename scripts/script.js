@@ -271,19 +271,22 @@ function readChatbox() {
       const itemRegex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()'-]+spoils))/g;
       const rewards = chat.match(regex);
       let counter = `${APP_PREFIX}MaizeMaze`;
- 
-      const addCount = rewards.flatMap((reward) => {
-        const matches = reward.match(itemRegex);
-        return matches.map((match) => {
-          return match.replace(/You receive:\s(?!\d+\sx)/g, 'You receive: 1 x ');
+      if (rewards) {
+        const addCount = rewards.flatMap((reward) => {
+          const matches = reward.match(itemRegex);
+          return matches.map((match) => {
+            return match.replace(/You receive:\s(?!\d+\sx)/g, 'You receive: 1 x ');
+          });
         });
-      });
 
-      saveMultipleItems(addCount, itemRegex, 'maize maze', counter);
+        saveMultipleItems(addCount, itemRegex, 'maize maze', counter);
+      } else {
+        const addCount = chat.match(itemRegex);
+        saveSingleItem(addCount[0], itemRegex, 'maize maze', counter);
+      }
     }
   }
 }
-
 // Save single item
 function saveSingleItem(match, regex, source, counter) {
   if (counter && !saveChatHistory.includes(match.trim())) {

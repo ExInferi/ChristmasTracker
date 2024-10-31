@@ -41,6 +41,8 @@ Have fun tracking!
 * When opened on multiple clients, the toolbar display on all clients shows the most recently detected spoils from the last used client.
 
 ## Updates
+**Update 31 Oct 2024, 23:30 Game Time**:
+* Fixed an issue where single spoils drops would not be logged.
 
 **Update 29 Oct 2024, 11:30 Game Time**:
 * Updated library to fix the issues occurring after yesterday's game update.
