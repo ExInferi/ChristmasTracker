@@ -743,7 +743,7 @@ $(function () {
     // CUSTOM: Additional export names for all individual spoils
     spoils.forEach(spoil => {
       if (display === spoil.id) {
-        fileName = `${APP_PREFIX}${spoils[0].text.replace(/ /g, '_')}TotalExport_${downloadDate}.csv`;
+        fileName = `${APP_PREFIX}${spoil.text.replace(/ /g, '_')}TotalExport_${downloadDate}.csv`;
       }
     });
     const blob = new Blob([csv], {
