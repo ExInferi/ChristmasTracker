@@ -46,13 +46,6 @@ let delay = 300;
 const presentRegex = /Open\s(.*?\sChristmas\sPresent)/;
 let currentPresent = _;
 let overlayColor = appColor;
-// Default titlebar state
-util.setTitleBar('Currently not tracking any presents.', 'No presents detected', 'icon', 'icon');
-// Clear titlebar on reload/exit
-$(window).bind('beforeunload', () => {
-  util.setTitleBar('');
-  window.alt1?.clearBinds();
-});
 
 function startTrack() {
   ttReader.track((state) => {
@@ -150,6 +143,18 @@ window.addEventListener('load', function () {
   }
 })
 
+// Default titlebar state
+if (alt1?.permissionInstalled) {
+util.setTitleBar('Currently not tracking any presents.', 'No presents detected', 'icon', 'icon');
+} else if(window.alt1 && !alt1.permissionInstalled) {
+  // Tell the user to install the app
+  $('#item-list').html('<p style="padding-inline:1em">Click the "ADD APP" button above to install the app.</p>');
+}
+// Clear titlebar on reload/exit
+$(window).bind('beforeunload', () => {
+  util.setTitleBar('');
+  window.alt1?.clearBinds();
+});
 
 let findChat = setInterval(function () {
   if (!window.alt1) {
