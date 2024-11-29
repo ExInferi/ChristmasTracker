@@ -233,8 +233,12 @@ function readChatbox() {
         const newReward = reward.match(rewardRegex);
         const source = currentPresent ?? 'Unknown';
         counter = `${APP_PREFIX}${source.replace(/[\s']/g, '')}`;
-        const items = newReward[3].match(itemRegex);
+        const items = newReward[2].match(itemRegex);
+        if (items.length === 1) {
+          saveSingleItem(items[0], itemRegex, source, counter);
+        } else {
         saveMultipleItems(items, itemRegex, source, counter);
+        }
       });
     } 
 }
