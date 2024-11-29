@@ -13,7 +13,7 @@ const TOTALS_PREFIX = `${APP_PREFIX}Totals_`;
 const DISPLAY_MODE = `${APP_PREFIX}Display`;
 
 // Themed app color
-const COL = [255, 102, 0];
+const COL = [206, 165, 0];
 
 // Additional constants
 const appURL = window.location.href.replace('index.html', '');
