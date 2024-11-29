@@ -129,11 +129,11 @@ let saveChatHistory = util.getSessionStorage(CHAT_SESSION) || [];
 if (!util.getLocalStorage(DISPLAY_MODE)) util.setLocalStorage(DISPLAY_MODE, 'history');
 
 // CUSTOM: Setup additional storage variables
-let whites = parseInt(util.getLocalStorage(`${APP_PREFIX}WhitePresents`)) || 0;
-let blues = parseInt(util.getLocalStorage(`${APP_PREFIX}BluePresents`)) || 0;
-let purples = parseInt(util.getLocalStorage(`${APP_PREFIX}PurplePresents`)) || 0;
-let golds = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldPresents`)) || 0;
-let santas = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasPresents`)) || 0;
+let whites = parseInt(util.getLocalStorage(`${APP_PREFIX}WhiteChristmasPresent`)) || 0;
+let blues = parseInt(util.getLocalStorage(`${APP_PREFIX}BlueChristmasPresent`)) || 0;
+let purples = parseInt(util.getLocalStorage(`${APP_PREFIX}PurpleChristmasPresent`)) || 0;
+let golds = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldChristmasPresent`)) || 0;
+let santas = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasChristmasPresent`)) || 0;
 
 
 // Find all visible chatboxes on screen
@@ -232,7 +232,7 @@ function readChatbox() {
         if (isLogged(reward)) return;
         const newReward = reward.match(rewardRegex);
         const source = currentPresent ?? 'Unknown';
-        counter = `${APP_PREFIX}${source.replace(/ /g, '')}`;
+        counter = `${APP_PREFIX}${source.replace(/[\s']/g, '')}`;
         const items = newReward[3].match(itemRegex);
         saveMultipleItems(items, itemRegex, source, counter);
       });
@@ -618,7 +618,7 @@ $(function () {
     util.deleteLocalStorage(DATA_STORAGE, SELECTED_CHAT, DISPLAY_MODE, `${TOTALS_PREFIX}hide`, `${TOTALS_PREFIX}show`);
     util.deleteSessionStorage(CHAT_SESSION);
     // CUSTOM: Additional storage keys to clear
-    util.deleteLocalStorage(`${APP_PREFIX}WhitePresents`, `${APP_PREFIX}BluePresents`, `${APP_PREFIX}PurplePresents`, `${APP_PREFIX}GoldPresents`, `${APP_PREFIX}SantasPresents`);
+    util.deleteLocalStorage(`${APP_PREFIX}WhiteChristmasPresent`, `${APP_PREFIX}BlueChristmasPresent`, `${APP_PREFIX}PurpleChristmasPresent`, `${APP_PREFIX}GoldChristmasPresent`, `${APP_PREFIX}SantasChristmasPresent`);
     $('#show-totals').prop('checked', true);
 
     location.reload();
@@ -703,40 +703,40 @@ window.addEventListener('storage', function (e) {
     }
       break;
     // CUSTOM: Additional storage keys to check for changes in count
-    case `${APP_PREFIX}WhitePresents`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}WhitePresents`));
+    case `${APP_PREFIX}WhiteChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}WhiteChristmasPresent`));
       if (whites != changedItems) {
         whites = changedItems;
         dataChanged = true;
       }
       break;
     }
-    case `${APP_PREFIX}BluePresents`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}BluePresents`));
+    case `${APP_PREFIX}BlueChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}BlueChristmasPresent`));
       if (blues != changedItems) {
         blues = changedItems;
         dataChanged = true;
       }
       break;
     }
-    case `${APP_PREFIX}PurplePresents`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}PurplePresents`));
+    case `${APP_PREFIX}PurpleChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}PurpleChristmasPresent`));
       if (purples != changedItems) {
         purples = changedItems;
         dataChanged = true;
       }
       break;
     }
-    case `${APP_PREFIX}GoldPresents`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldPresents`));
+    case `${APP_PREFIX}GoldChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldChristmasPresent`));
       if (golds != changedItems) {
         golds = changedItems;
         dataChanged = true;
       }
       break;
     }
-    case `${APP_PREFIX}SantasPresents`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasPresents`));
+    case `${APP_PREFIX}SantasChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasChristmasPresent`));
       if (santas != changedItems) {
         santas = changedItems;
         dataChanged = true;
