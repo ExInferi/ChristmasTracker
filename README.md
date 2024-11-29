@@ -24,9 +24,12 @@ Have fun tracking!
 * When opened on multiple clients, the toolbar display on all clients shows the most recently detected present from the last used client.
 
 ## Updates
-**Update 14 Oct 2024, 14:00 Game Time**:
+**Update 29 November 2024, 20:45 Game Time**:
 
 * [Beta release!](https://exinferi.github.io/ChristmasTracker/)
+  * Reworked HarvestHollowHaul to work for the soon™ christmas presents
+  * Adjusted chat comparison for duplicates to hopefully work a bit faster
+  * Obviously this beta does nothing at time of release, since the event hasn't started yet >.<
 
 ## Special thanks
 
@@ -38,7 +41,7 @@ And of course all my lovely clannies in [Lootbeams](https://runepixels.com/clans
 ## My other apps
 
 [WildyRewards](https://github.com/ExInferi/WildyRewards): Wilderness Flash Event Rewards Tracker  
-[HarvestHollowHaul](https://github.com/ExInferi/HarvestHollowHaul): Halloween event Rewards Tracker  
+[HarvestHollowHaul](https://github.com/ExInferi/HarvestHollowHaul): Halloween Event Rewards Tracker  
 [BeachTracker](https://github.com/ExInferi/BeachTracker): Beach 2024 Rewards Tracker - archived  
 [PumpkinTracker](https://github.com/ExInferi/PumpkinTracker): Halloween 2023 Smashing/Party Pumkin Rewards Tracker - archived  
 [Tax Calculator](https://runeapps.org/forums/viewtopic.php?id=1508): Basic app to calculate the tax you have to pay at any given value  
