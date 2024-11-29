@@ -2,7 +2,7 @@
 
 [Based on ZeroGwafa's Seren Tracker](https://github.com/ZeroGwafa/SerenTracker/tree/master)
 
-For those of you who want to track the loot from Christmas presents, I reworked the Seren Tracker to work for several rewards obtained during this seasonal Halloween event.
+For those of you who want to track the loot from Christmas presents, I reworked the Seren Tracker to work for Christmas presents obtained during the repeatable Christmas events.
 
 ## How to install
 
