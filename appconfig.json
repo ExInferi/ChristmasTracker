@@ -9,6 +9,6 @@
   "minWidth": 218,
   "minHeight": 280,
   "requestHandlers": [],
-  "activators": [],
+  "activators": ["regex:(.*Christmas Present)"],
   "permissions": "pixel,gamestate,overlay"
 }
