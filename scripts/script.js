@@ -464,13 +464,13 @@ function showItems() {
       break;
     // CUSTOM: Additional displays for custom sources
     case 'white-present': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="blue-present" title="Click to show Blue Present Totals">Bag of present Reward Totals</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="blue-present" title="Click to show Blue Present Totals">White Present Totals</li>`);
       total = getTotal('White Christmas Present');
       text = 'White Presents Opened';
     }
       break;
     case 'blue-present': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="purple-present" title="Click to show Purple Present Totals">Blue Present Drop Totals</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="purple-present" title="Click to show Purple Present Totals">Blue Present Totals</li>`);
       total = getTotal('Blue Christmas Present');
       text = 'Blue Presents Opened';
     }
