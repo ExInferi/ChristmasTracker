@@ -23,7 +23,7 @@ const showTotals = document.getElementById('show-totals');
 const _ = undefined;
 
 // CUSTOM: Present colors
-const whiteColor = A1lib.mixColor(255, 255, 255);
+const whiteColor = A1lib.mixColor(224, 220, 219);
 const blueColor = A1lib.mixColor(5, 103, 174);
 const purpleColor = A1lib.mixColor(112, 53, 218);
 const goldColor = A1lib.mixColor(248, 181, 23);
@@ -79,7 +79,7 @@ function startTrack() {
           case 'Gold':
             overlayColor = goldColor;
             break;
-          case 'Santa\'s':
+          case "Santa's":
             overlayColor = greenColor;
             break;
         }
@@ -88,8 +88,15 @@ function startTrack() {
         // Set overlay text and rectangle for tooltip
         alt1.overLaySetGroup('tracking');
         alt1.overLayTextEx(`Tracking: ${currentPresent}`, overlayColor, 24, width, 100, 1000, 'Arial', true, true);
-        alt1.overLayRect(overlayColor, state.area.x - 2, state.area.y - 2, state.area.width + 4, state.area.height + 4, 1000, 2);
-
+        alt1.overLayRect(
+          overlayColor,
+          state.area.x - 2,
+          state.area.y - 2,
+          state.area.width + 4,
+          state.area.height + 4,
+          1000,
+          2
+        );
       }
     }
   }, delay);
@@ -97,7 +104,7 @@ function startTrack() {
 A1lib.on('alt1pressed', () => {
   // Toggle tooltip reading in debug mode
   if (debugChat) {
-  ttReader.tracking ? ttReader.stopTrack() : startTrack();
+    ttReader.tracking ? ttReader.stopTrack() : startTrack();
   }
 });
 
@@ -110,6 +117,11 @@ reader.readargs = {
     A1lib.mixColor(102, 152, 255), // Common reward color (blue)
     A1lib.mixColor(163, 53, 238), // Uncommon reward color (purple)
     A1lib.mixColor(255, 128, 0), // Rare reward color (orange)
+    whiteColor, // White Christmas Present
+    blueColor, // Blue Christmas Present
+    purpleColor, // Purple Christmas Present
+    goldColor, // Gold Christmas Present
+    greenColor, // Santa's Christmas Present
   ],
   backwards: true,
 };
@@ -127,7 +139,7 @@ let blues = parseInt(util.getLocalStorage(`${APP_PREFIX}BlueChristmasPresent`)) 
 let purples = parseInt(util.getLocalStorage(`${APP_PREFIX}PurpleChristmasPresent`)) || 0;
 let golds = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldChristmasPresent`)) || 0;
 let santas = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasChristmasPresent`)) || 0;
-
+let exchanged = parseInt(util.getLocalStorage(`${APP_PREFIX}Exchanged`)) || 0;
 
 // Find all visible chatboxes on screen
 if (!window.alt1) {
@@ -141,12 +153,12 @@ window.addEventListener('load', function () {
     reader.read();
     startTrack();
   }
-})
+});
 
 // Default titlebar state
-if (alt1?.permissionInstalled) {
-util.setTitleBar('Currently not tracking any presents.', 'No presents detected', 'icon', 'icon');
-} else if(window.alt1 && !alt1.permissionInstalled) {
+if (window.alt1 && alt1.permissionInstalled) {
+  util.setTitleBar('Currently not tracking any presents.', 'No presents detected', 'icon', 'icon');
+} else if (window.alt1 && !alt1.permissionInstalled) {
   // Tell the user to install the app
   $('#item-list').html('<p style="padding-inline:1em">Click the "ADD APP" button above to install the app.</p>');
 }
@@ -161,8 +173,7 @@ let findChat = setInterval(function () {
     clearInterval(findChat);
     return;
   }
-  if (reader.pos === null)
-    reader.find();
+  if (reader.pos === null) reader.find();
   else {
     clearInterval(findChat);
     reader.pos.boxes.map((box, i) => {
@@ -221,51 +232,76 @@ function readChatbox() {
   // Check if the chat message contains any of the following strings
   const found = [
     chat.indexOf('You open the Christmas present and receive') > -1,
-
+    chat.indexOf('Christmas wrapping paper and receive') > -1,
   ];
 
   const foundPresent = found[0];
+  const foundExchange = found[1];
+  if (foundPresent) {
+    const regex =
+      /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s':+\-!()\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
+    const rewardRegex = new RegExp(regex.source);
+    const rewards = chat.match(regex);
+    let counter = null;
 
-    if (foundPresent) {
-      const regex = /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s':+\-!()\d]+ ?)+)/g
-      const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
-      const rewardRegex = new RegExp(regex.source);
-      const rewards = chat.match(regex);
-      let counter = null;
-
-      rewards.forEach((reward) => {
-        if (isLogged(reward)) return;
-        const newReward = reward.match(rewardRegex);
-        const source = currentPresent ?? 'Unknown';
-        counter = `${APP_PREFIX}${source.replace(/[\s']/g, '')}`;
-        const items = newReward[2].match(itemRegex);
-        if (items.length === 1) {
-          saveSingleItem(items[0], itemRegex, source, counter);
-        } else {
+    rewards.forEach((reward) => {
+      if (isLogged(reward)) return;
+      const newReward = reward.match(rewardRegex);
+      const source = currentPresent ?? 'Unknown';
+      counter = `${APP_PREFIX}${source.replace(/[\s']/g, '')}`;
+      const items = newReward[2].match(itemRegex);
+      if (items.length === 1) {
+        saveSingleItem(items[0], itemRegex, source, counter);
+      } else {
         saveMultipleItems(items, itemRegex, source, counter);
-        }
-      });
-    } 
+      }
+    });
+  }
+  if (foundExchange) {
+    const regex =
+      /(\[\d+:\d+:\d+\]) You exchange (\d+) Christmas wrapping paper and receive: \s?((?:\1 \d+[ x ][\w\s'\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x\s*([\w\s']*)/g;
+    const rewardRegex = new RegExp(regex.source);
+    const rewards = chat.match(regex);
+    const counter = `${APP_PREFIX}Exchanged`;
+    rewards.forEach((reward) => {
+      if (isLogged(reward)) return;
+      const newReward = reward.match(rewardRegex);
+      const source = 'Exchanged';
+      const items = newReward[3].match(itemRegex);
+      const amount = parseInt(newReward[2]);
+
+      saveCustomAmount(items, itemRegex, source, counter, amount);
+    });
+  }
 }
 // Save single item
 function saveSingleItem(match, regex, source, counter = null) {
   if (counter) {
     increaseCounter(counter);
   }
-
   saveItem(regex, match, source);
 }
 
 // In case of possible multiple items, save them all
 function saveMultipleItems(match, regex, source, counter = null) {
   const filtered = filterItems(match, regex);
-  // const alreadySaved = filtered.some(item => saveChatHistory.includes(item.trim()));
 
   if (counter) {
     increaseCounter(counter);
   }
   filtered.forEach((item) => {
-    saveItem(regex, item, source)
+    saveItem(regex, item, source);
+  });
+}
+
+// Special case for custom amount
+function saveCustomAmount(items, regex, source, counter, amount) {
+  increaseCounter(counter, amount);
+
+  items.forEach((item) => {
+    saveItem(regex, item, source);
   });
 }
 
@@ -290,7 +326,7 @@ function filterItems(items, regex) {
   }, {});
 
   // Then, create a new array with updated quantities for each item
-  const updatedItemsArray = items.map(itemString => {
+  const updatedItemsArray = items.map((itemString) => {
     const match = itemString.match(cleanRegex);
     if (match) {
       const itemName = match[2].trim();
@@ -300,19 +336,19 @@ function filterItems(items, regex) {
         const digit = group1 || group2 || group3;
         if (debugChat) {
           console.debug('group1', group1, 'group2', group2, 'group3', group3);
-          console.log('Replaced:',digit, totalQuantity, match.replace(digit, totalQuantity));
+          console.log('Replaced:', digit, totalQuantity, match.replace(digit, totalQuantity));
         }
         return match.replace(digit, totalQuantity);
       });
     }
     return itemString;
   });
-  // Update the saveChatHistory with the original item that was modified
-  // items.forEach(item => {
-  //   if (!updatedItemsArray.includes(item) && !saveChatHistory.includes(item.trim())) {
-  //     saveChatHistory.push(item.trim());
-  //   }
-  // });
+   // Update the saveChatHistory with the original item that was modified
+  items.forEach(item => {
+    if (!updatedItemsArray.includes(item) && !saveChatHistory.includes(item.trim())) {
+      saveChatHistory.push(item.trim());
+    }
+  });
   return updatedItemsArray;
 }
 
@@ -329,29 +365,29 @@ function isLogged(chat) {
 }
 
 // Function to increase the counter in local storage
-function increaseCounter(counter) {
+function increaseCounter(counter, add = 1) {
   let num = parseInt(localStorage.getItem(counter)) || 0;
-  num += 1;
+  num += add;
   localStorage.setItem(counter, num);
   // Trigger event to update the counter variable -> see bottom part of the script
   const options = {
     key: counter,
-    oldValue: JSON.stringify(num - 1),
-    newValue: JSON.stringify(num)
-  }
+    oldValue: JSON.stringify(num - add),
+    newValue: JSON.stringify(num),
+  };
   dispatchEvent(new StorageEvent('storage', options));
 }
 
 function saveItem(regex, item, src) {
   // Adjust regex to remove any flags
   const cleanRegex = new RegExp(regex.source);
-  // if (saveChatHistory.includes(item.trim())) {
-  //   console.debug('Duplicate:', item.trim());
-  //   return;
-  // }
-  // saveChatHistory.push(item.trim());
-  // util.setSessionStorage(CHAT_SESSION, saveChatHistory);
-
+  // Check if the item has already been saved
+  if (saveChatHistory.includes(item.trim())) {
+    console.debug('Duplicate:', item.trim());
+    return;
+  }
+  saveChatHistory.push(item.trim());
+  util.setSessionStorage(CHAT_SESSION, saveChatHistory);
   const reward = item.match(cleanRegex);
   const date = new Date();
 
@@ -363,7 +399,7 @@ function saveItem(regex, item, src) {
   const getItem = {
     item: `${itemAmount} x ${itemName}`,
     source: itemSource,
-    time: itemTime
+    time: itemTime,
   };
   console.log(getItem);
   saveData.push(getItem);
@@ -372,23 +408,26 @@ function saveItem(regex, item, src) {
   const options = {
     key: DATA_STORAGE,
     oldValue: JSON.stringify(saveData.slice(-1)),
-    newValue: JSON.stringify(saveData)
-  }
+    newValue: JSON.stringify(saveData),
+  };
   dispatchEvent(new StorageEvent('storage', options));
 }
 
 // Function to determine the total of all items recorded
 function getTotal(source) {
   let total = {};
-  saveData.forEach(item => {
+  saveData.forEach((item) => {
+    // CUSTOM: Exclude Papers Exchanged
+    if (item.source.includes('Exchanged') && source !== 'Exchanged') {
+      return;
+    }
     if (item.source.includes(source) || source === undefined) {
       const data = item.item.split(' x ');
-      total[data[1]] = parseInt(total[data[1]]) + parseInt(data[0]) || parseInt(data[0])
+      total[data[1]] = parseInt(total[data[1]]) + parseInt(data[0]) || parseInt(data[0]);
     }
-  })
+  });
   return total;
 }
-
 
 // Function to display totals on top of the list
 function displayTotal(text, total) {
@@ -401,20 +440,24 @@ function appendItems(items) {
     $('#load-more').remove();
   }
 
-  items.forEach(item => {
+  items.forEach((item) => {
     $('#item-list').append(`<li title="From: ${item.source} @ ${util.formatDateTime(item.time)}">${item.item}</li>`);
   });
-
 }
 // Function to create a list of all items and their totals
 function createList(total, type) {
   if (type === 'history') {
     const start = currentList * itemsPerList;
     const end = start + itemsPerList;
-    const itemsToShow = [...saveData].reverse().slice(start, end);
+    // const itemsToShow = [...saveData].reverse().slice(start, end);
+//CUSTOM: Filter out items with source 'Exchanged'
+const filteredData = saveData.filter(item => !item.source.includes('Exchanged'));
 
-    if (end < saveData.length) {
-      appendItems(itemsToShow);
+const itemsToShow = [...filteredData].reverse().slice(start, end);
+    // if (end < saveData.length) {
+    // CUSTOM: Filter out items with source 'Exchanged'
+    if (end < filteredData.length) {
+      appendItems(itemsToShow.reverse());
 
       // Create the load more button (again)
       $('#item-list').append('<button id="load-more" class="nisbutton nissmallbutton" type="button">Load More</button>');
@@ -423,9 +466,13 @@ function createList(total, type) {
         createList(total, type);
       });
     } else {
-      const remaining = saveData.length - start;
+      // const remaining = saveData.length - start;
+      // CUSTOM: Filter out items with source 'Exchanged'
+      const remaining = filteredData.length - start;
       if (remaining > 0) {
-        const remainingItems = saveData.reverse().slice(start, start + remaining);
+        // const remainingItems = saveData.reverse().slice(start, start + remaining);
+        // CUSTOM: Filter out items with source 'Exchanged'
+        const remainingItems = filteredData.reverse().slice(start, start + remaining);
         appendItems(remainingItems);
       }
     }
@@ -493,34 +540,42 @@ function showItems() {
       text = 'Santa\'s Presents Opened';
     }
       break;
-
+    case 'exchanged': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Papers Exchanged</li>`);
+      total = getTotal('Exchanged');
+      text = 'Papers Exchanged';
+    }
+      break;
   }
 
   if (showTotals.checked) {
     let totalRewards = 0;
        
     switch (display) {
-      case "total":
-      case "history":
+      case 'total':
+      case 'history':
         totalRewards = whites + blues + purples + golds + santas;
         break;
       // CUSTOM: Additional totals for custom sources
-      case "white-present":
+      case 'white-present':
         totalRewards = whites;
         break;
-      case "blue-present":
+      case 'blue-present':
         totalRewards = blues;
         break;
-      case "purple-present":
+      case 'purple-present':
         totalRewards = purples;
         break;
-      case "gold-present":
+      case 'gold-present':
         totalRewards = golds;
         break;
-      case "santas-present":
+      case 'santas-present':
         totalRewards = santas;
         break;
-     }
+      case 'exchanged':
+        totalRewards = exchanged;
+        break;
+    }
 
     displayTotal(text, totalRewards);
   }
@@ -552,7 +607,11 @@ function createExportData(type) {
       total = getTotal('Gold Christmas Present');
       break;
     case 'santas-present':
-      total = getTotal('Santa\'s Christmas Present');
+      total = getTotal("Santa's Christmas Present");
+      break;
+    case 'exchanged':
+      str = `Total,${exchanged} wrapping papers\nPresent,Qty\n`;
+      total = getTotal('Exchanged');
       break;
     default: {
       console.warn('Display mode:', util.getLocalStorage(DISPLAY_MODE));
@@ -565,7 +624,9 @@ function createExportData(type) {
       str += `${item.item},${item.source},${util.formatDateTime(item.time)}\n`;
     });
   } else {
-    Object.keys(total).sort().forEach(item => str += `${item},${total[item]}\n`);
+    Object.keys(total)
+      .sort()
+      .forEach((item) => (str += `${item},${total[item]}\n`));
   }
   return str;
 }
@@ -573,7 +634,6 @@ function createExportData(type) {
 // Event listeners
 
 $(function () {
-
   // Changing which chatbox to read
   $('.chat').change(function () {
     reader.pos.mainbox = reader.pos.boxes[$(this).val()];
@@ -612,11 +672,14 @@ $(function () {
         break;
       case 'santas-present':
         fileName = `${APP_PREFIX}SantasPresentTotalExport_${downloadDate}.csv`;
-        break
+        break;
+      case 'exchanged':
+        fileName = `${APP_PREFIX}PapersExchangedExport_${downloadDate}.csv`;
+        break;
       default:
     }
     const blob = new Blob([csv], {
-      type: 'text/csv;charset=utf-8;'
+      type: 'text/csv;charset=utf-8;',
     });
 
     util.downloadFile(blob, fileName);
@@ -627,17 +690,24 @@ $(function () {
     util.deleteLocalStorage(DATA_STORAGE, SELECTED_CHAT, DISPLAY_MODE, `${TOTALS_PREFIX}hide`, `${TOTALS_PREFIX}show`);
     util.deleteSessionStorage(CHAT_SESSION);
     // CUSTOM: Additional storage keys to clear
-    util.deleteLocalStorage(`${APP_PREFIX}WhiteChristmasPresent`, `${APP_PREFIX}BlueChristmasPresent`, `${APP_PREFIX}PurpleChristmasPresent`, `${APP_PREFIX}GoldChristmasPresent`, `${APP_PREFIX}SantasChristmasPresent`);
+    util.deleteLocalStorage(
+      `${APP_PREFIX}WhiteChristmasPresent`,
+      `${APP_PREFIX}BlueChristmasPresent`,
+      `${APP_PREFIX}PurpleChristmasPresent`,
+      `${APP_PREFIX}GoldChristmasPresent`,
+      `${APP_PREFIX}SantasChristmasPresent`,
+      `${APP_PREFIX}Exchanged`
+    );
     $('#show-totals').prop('checked', true);
 
     location.reload();
-  })
+  });
 
   // Toggle display mode
   $(document).on('click', '#switch-display', function () {
     util.setLocalStorage(DISPLAY_MODE, `${$(this).data('show')}`);
-    showItems()
-  })
+    showItems();
+  });
 
   // Right-click to change display mode
   const $displaySelect = $('#switch-menu');
@@ -650,6 +720,7 @@ $(function () {
     <li data-show="purple-present" title="Show Purple Present Totals">Purple Present Totals</li>
     <li data-show="gold-present" title="Show Gold Present Totals">Gold Present Totals</li>
     <li data-show="santas-present" title="Show Santa's Present Totals">Santa's Present Totals</li>
+    <li data-show="exchanged" title="Show presents received from papers">Papers Exchanged</li>
   `);
 
   $(document).on('contextmenu', '#switch-display', function (e) {
@@ -666,15 +737,10 @@ $(function () {
 
   $('#switch-menu li').click(function (e) {
     util.setLocalStorage(DISPLAY_MODE, `${$(this).data('show')}`);
-    showItems()
+    showItems();
   });
 });
 
-
-$(function () {
-
-
-});
 // Toggle totals display
 $(function () {
   $('[data-totals]').each(function () {
@@ -686,7 +752,6 @@ $(function () {
     if (state) this.checked = state.checked;
   });
 });
-
 
 $(window).bind('unload', function () {
   $('[data-totals]').each(function () {
@@ -702,14 +767,14 @@ window.addEventListener('storage', function (e) {
   let dataChanged = false;
   switch (e.key) {
     case DATA_STORAGE: {
-      let changedData = util.getLocalStorage(DATA_STORAGE);
-      let lastChange = changedData[changedData.length - 1];
-      let lastSave = [saveData[saveData.length - 1]]
-      if (lastChange != lastSave) {
-        saveData = changedData;
-        dataChanged = true;
+        let changedData = util.getLocalStorage(DATA_STORAGE);
+        let lastChange = changedData[changedData.length - 1];
+        let lastSave = [saveData[saveData.length - 1]];
+        if (lastChange != lastSave) {
+          saveData = changedData;
+          dataChanged = true;
+        }
       }
-    }
       break;
     // CUSTOM: Additional storage keys to check for changes in count
     case `${APP_PREFIX}WhiteChristmasPresent`: {
@@ -752,10 +817,19 @@ window.addEventListener('storage', function (e) {
       }
       break;
     }
+    case `${APP_PREFIX}Exchanged`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}Exchanged`));
+      if (exchanged != changedItems) {
+        exchanged = changedItems;
+        dataChanged = true;
+      }
+      break;
+    }
   }
 
   if (dataChanged) {
-    const types = typeof (JSON.parse(e.oldValue)) === typeof (JSON.parse(e.newValue)) ? typeof (JSON.parse(e.newValue)) : 'mismatch';
+    const types =
+      typeof JSON.parse(e.oldValue) === typeof JSON.parse(e.newValue) ? typeof JSON.parse(e.newValue) : 'mismatch';
     switch (types) {
       case 'mismatch':
         throw new Error('Data type mismatch');
@@ -777,4 +851,4 @@ window.addEventListener('storage', function (e) {
 window.toggleChat = () => {
   debugChat = !debugChat;
   console.log('Debug chat:', debugChat);
-}
+};
