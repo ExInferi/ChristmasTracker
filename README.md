@@ -4,6 +4,18 @@
 
 For those of you who want to track the loot from Christmas presents, I reworked the Seren Tracker to work for Christmas presents obtained during the repeatable Christmas events.
 
+![example](/assets/example.png)
+
+It tracks the following:
+- Rewards received from Christmas Presents
+- Christmas Presents obtained from handing in Christmas wrapping paper
+
+You can change the view of the app by right-clicking the golden bar on top:  
+![right click context menu](/assets/contextmenu.png)
+
+The tracking of the presents is done by reading a combination of the tooltip and the chat. Whenever you hover a new type of present, it will update the titlebar to show the image of the currently tracked present:  
+![titlebar example](/assets/titlebar.png)
+
 ## How to install
 
 Go to [the app](https://exinferi.nl/apps/xmas) in your browser and click the link, or:
@@ -24,6 +36,12 @@ Have fun tracking!
 * When opened on multiple clients, the toolbar display on all clients shows the most recently detected present from the last used client.
 
 ## Updates
+
+**Update 2 December 2024, 20:45 Game Time**:
+
+* Added tracking of christmas papers exchanged.
+* Beta testing has officially started! Please report any problems you encounter in Issues with a clear description and preferably a screenshot.
+
 **Update 29 November 2024, 20:45 Game Time**:
 
 * [Beta release!](https://exinferi.github.io/ChristmasTracker/)
