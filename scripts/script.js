@@ -227,7 +227,7 @@ function readChatbox() {
   const foundPresent = found[0];
 
     if (foundPresent) {
-      const regex = /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s'+\-!()\d]+ ?)+)/g
+      const regex = /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s':+\-!()\d]+ ?)+)/g
       const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+\-!()\d]*)/g;
       const rewardRegex = new RegExp(regex.source);
       const rewards = chat.match(regex);
