@@ -401,12 +401,8 @@ function saveItem(regex, item, src) {
   // Adjust regex to remove any flags
   const cleanRegex = new RegExp(regex.source);
   // Check if the item has already been saved
-  if (saveChatHistory.includes(item.trim())) {
-    console.debug('Duplicate:', item.trim());
-    return;
-  }
-  saveChatHistory.push(item.trim());
-  util.setSessionStorage(CHAT_SESSION, saveChatHistory);
+  if (isLogged(item.trim())) return;
+ 
   const reward = item.match(cleanRegex);
   const date = new Date();
 

@@ -17,6 +17,9 @@ You can change the view of the app by right-clicking the golden bar on top:
 The tracking of the presents is done by reading a combination of the tooltip and the chat. Whenever you hover a new type of present, it will update the titlebar to show the image of the currently tracked present:  
 ![titlebar example](/assets/titlebar.png)
 
+> [!NOTE]  
+> The tracker is most reliable when opening no more than 1 present/gift per second.
+
 ## How to install
 
 Go to [the app](https://exinferi.nl/apps/xmas) in your browser and click the link, or:
