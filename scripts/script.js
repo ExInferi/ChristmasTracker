@@ -140,6 +140,7 @@ let purples = parseInt(util.getLocalStorage(`${APP_PREFIX}PurpleChristmasPresent
 let golds = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldChristmasPresent`)) || 0;
 let santas = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasChristmasPresent`)) || 0;
 let exchanged = parseInt(util.getLocalStorage(`${APP_PREFIX}Exchanged`)) || 0;
+let mysterygifts = parseInt(util.getLocalStorage(`${APP_PREFIX}MysteryGifts`)) || 0;
 
 // Find all visible chatboxes on screen
 if (!window.alt1) {
@@ -233,10 +234,13 @@ function readChatbox() {
   const found = [
     chat.indexOf('You open the Christmas present and receive') > -1,
     chat.indexOf('Christmas wrapping paper and receive') > -1,
+    chat.indexOf('You unwrap your mystery gift and receive') > -1,
   ];
 
   const foundPresent = found[0];
   const foundExchange = found[1];
+  const foundMystery = found[2];
+
   if (foundPresent) {
     const regex =
       /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s':+\-!()\d]+ ?)+)/g;
@@ -273,6 +277,21 @@ function readChatbox() {
       const amount = parseInt(newReward[2]);
 
       saveCustomAmount(items, itemRegex, source, counter, amount);
+    });
+  }
+  if (foundMystery) {
+    const regex = /(\[\d+:\d+:\d+\]) You unwrap your mystery gift and receive: \s?((?:\1 \d+[ x ][\w\s':+\-!()\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
+    const rewardRegex = new RegExp(regex.source);
+    const rewards = chat.match(regex);
+    const counter = `${APP_PREFIX}MysteryGifts`;
+    const source = 'Mystery Gift';
+
+    rewards.forEach((reward) => {
+      if (isLogged(reward)) return;
+      const newReward = reward.match(rewardRegex);
+      const items = newReward[2].match(itemRegex);
+      saveMultipleItems(items, itemRegex, source, counter);
     });
   }
 }
@@ -546,6 +565,12 @@ function showItems() {
       text = 'Papers Exchanged';
     }
       break;
+    case 'mystery-gift': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Mystery Gift Totals</li>`);
+      total = getTotal('Mystery Gift');
+      text = 'Mystery Gifts Opened';
+    }
+      break;
   }
 
   if (showTotals.checked) {
@@ -575,6 +600,9 @@ function showItems() {
       case 'exchanged':
         totalRewards = exchanged;
         break;
+      case 'mystery-gift':	
+        totalRewards = mysterygifts;	
+        break;
     }
 
     displayTotal(text, totalRewards);
@@ -587,6 +615,7 @@ function showItems() {
 function createExportData(type) {
   let str = 'Item,Qty\n';
   let total = getTotal();
+  let totalRewards = whites + blues + purples + golds + santas;
   switch (type) {
     case 'total':
       break;
@@ -596,22 +625,31 @@ function createExportData(type) {
     // CUSTOM: Additional exports for custom sources
     case 'white-present':
       total = getTotal('White Christmas Present');
+      totalRewards = whites;
       break;
     case 'blue-present':
       total = getTotal('Blue Christmas Present');
+      totalRewards = blues;
       break;
     case 'purple-present':
       total = getTotal('Purple Christmas Present');
+      totalRewards = purples;
       break;
     case 'gold-present':
       total = getTotal('Gold Christmas Present');
+      totalRewards = golds;
       break;
     case 'santas-present':
       total = getTotal("Santa's Christmas Present");
+      totalRewards = santas;
       break;
     case 'exchanged':
-      str = `Total,${exchanged} wrapping papers\nPresent,Qty\n`;
       total = getTotal('Exchanged');
+      totalRewards = exchanged;
+      break;
+    case 'mystery-gift':
+      total = getTotal('Mystery Gift');
+      totalRewards = mysterygifts;
       break;
     default: {
       console.warn('Display mode:', util.getLocalStorage(DISPLAY_MODE));
@@ -627,6 +665,7 @@ function createExportData(type) {
     Object.keys(total)
       .sort()
       .forEach((item) => (str += `${item},${total[item]}\n`));
+      str += `Total rewards,${totalRewards}\n`;
   }
   return str;
 }
@@ -676,6 +715,9 @@ $(function () {
       case 'exchanged':
         fileName = `${APP_PREFIX}PapersExchangedExport_${downloadDate}.csv`;
         break;
+      case 'mystery-gift':
+        fileName = `${APP_PREFIX}MysteryGiftsExport_${downloadDate}.csv`;
+        break
       default:
     }
     const blob = new Blob([csv], {
@@ -696,7 +738,8 @@ $(function () {
       `${APP_PREFIX}PurpleChristmasPresent`,
       `${APP_PREFIX}GoldChristmasPresent`,
       `${APP_PREFIX}SantasChristmasPresent`,
-      `${APP_PREFIX}Exchanged`
+      `${APP_PREFIX}Exchanged`,
+      `${APP_PREFIX}MysteryGifts`
     );
     $('#show-totals').prop('checked', true);
 
@@ -721,6 +764,7 @@ $(function () {
     <li data-show="gold-present" title="Show Gold Present Totals">Gold Present Totals</li>
     <li data-show="santas-present" title="Show Santa's Present Totals">Santa's Present Totals</li>
     <li data-show="exchanged" title="Show presents received from papers">Papers Exchanged</li>
+    <li data-show="mystery-gift" title="Show Mystery gift Totals">Mystery Gift Totals</li>
   `);
 
   $(document).on('contextmenu', '#switch-display', function (e) {
@@ -821,6 +865,14 @@ window.addEventListener('storage', function (e) {
       let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}Exchanged`));
       if (exchanged != changedItems) {
         exchanged = changedItems;
+        dataChanged = true;
+      }
+      break;
+    }
+    case `${APP_PREFIX}MysteryGifts`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}MysteryGifts`));
+      if (mysterygifts != changedItems) {
+        mysterygifts = changedItems;
         dataChanged = true;
       }
       break;

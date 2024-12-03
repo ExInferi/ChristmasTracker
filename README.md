@@ -9,6 +9,7 @@ For those of you who want to track the loot from Christmas presents, I reworked 
 It tracks the following:
 - Rewards received from Christmas Presents
 - Christmas Presents obtained from handing in Christmas wrapping paper
+- Rewards received from Mystery gifts
 
 You can change the view of the app by right-clicking the golden bar on top:  
 ![right click context menu](/assets/contextmenu.png)
@@ -36,6 +37,10 @@ Have fun tracking!
 * When opened on multiple clients, the toolbar display on all clients shows the most recently detected present from the last used client.
 
 ## Updates
+
+**Update 3 December 2024, 07:30 Game Time**:
+
+* Added tracking of mystery gift contents
 
 **Update 2 December 2024, 20:45 Game Time**:
 
