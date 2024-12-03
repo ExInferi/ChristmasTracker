@@ -450,14 +450,14 @@ function createList(total, type) {
     const start = currentList * itemsPerList;
     const end = start + itemsPerList;
     // const itemsToShow = [...saveData].reverse().slice(start, end);
-//CUSTOM: Filter out items with source 'Exchanged'
-const filteredData = saveData.filter(item => !item.source.includes('Exchanged'));
+    //CUSTOM: Filter out items with source 'Exchanged'
+    const filteredData = saveData.filter(item => !item.source.includes('Exchanged'));
 
-const itemsToShow = [...filteredData].reverse().slice(start, end);
+    const itemsToShow = [...filteredData].reverse().slice(start, end);
     // if (end < saveData.length) {
     // CUSTOM: Filter out items with source 'Exchanged'
     if (end < filteredData.length) {
-      appendItems(itemsToShow.reverse());
+      appendItems(itemsToShow);
 
       // Create the load more button (again)
       $('#item-list').append('<button id="load-more" class="nisbutton nissmallbutton" type="button">Load More</button>');
