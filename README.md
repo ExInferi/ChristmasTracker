@@ -1,32 +1,31 @@
-# HarvestHollowHaul
+# ChristmasTracker
 
 [Based on ZeroGwafa's Seren Tracker](https://github.com/ZeroGwafa/SerenTracker/tree/master)
 
-For those of you who want to track the loot from Harvest Hollow, I reworked the Seren Tracker to work for several rewards obtained during this seasonal Halloween event.
-
-It tracks the following: 
-- Spoils received at Maize Maze
-- Loot from spoils and clan goodie bags
-- Items found when skilling throughout Gielinor
+For those of you who want to track the loot from Christmas presents, I reworked the Seren Tracker to work for Christmas presents obtained during the repeatable Christmas events.
 
 ![example](/assets/example.png)
 
-When the app detects spoils by reading the tooltip, it updates the Alt1 Toolbar with icons representing the detected type of spoils.
-You can hover over these icons to see a descriptive text:  
-![toolbar example](/assets/toolbar.png)
+It tracks the following:
+- Rewards received from Christmas Presents
+- Christmas Presents obtained from handing in Christmas wrapping paper
+- Rewards received from Mystery gifts
 
-**Legend for spoils icons:** 
-|Left to right |=>|![x](/assets/toolbar-icons.png)|
-|:---: | :---: | :---: |
-| Basic | Impressive | Prestigious |
-| Phosphosseus | Skaraxxi | Solak-o'-lantern
+You can change the view of the app by right-clicking the golden bar on top:  
+![right click context menu](/assets/contextmenu.png)
+
+The tracking of the presents is done by reading a combination of the tooltip and the chat. Whenever you hover a new type of present, it will update the titlebar to show the image of the currently tracked present:  
+![titlebar example](/assets/titlebar.png)
+
+> [!NOTE]  
+> The tracker is most reliable when opening no more than 1 present/gift per second.
 
 ## How to install
 
-Go to [the app](https://exinferi.nl/apps/hhh) in your browser and click the link, or:
+Go to [the app](https://exinferi.nl/apps/xmas) in your browser and click the link, or:
 
 1. Go to the browser inside Alt1 toolkit
-2. Visit `https://exinferi.nl/apps/hhh`
+2. Visit `https://exinferi.nl/apps/xmas`
 3. Hit the yellow 'add app' button in the upper right corner.
 
 The app needs the following permissions: Pixel, Gamestate and Overlay.  
@@ -38,47 +37,25 @@ Have fun tracking!
 
 * May behave odd with different chat sizes than 12.
 * Reward history display is a bit funky when there's less than 25 items to display.
-* When opened on multiple clients, the toolbar display on all clients shows the most recently detected spoils from the last used client.
+* When opened on multiple clients, the toolbar display on all clients shows the most recently detected present from the last used client.
 
 ## Updates
-**Update 31 Oct 2024, 23:30 Game Time**:
-* Fixed an issue where single spoils drops would not be logged.
 
-**Update 29 Oct 2024, 11:30 Game Time**:
-* Updated library to fix the issues occurring after yesterday's game update.
+**Update 3 December 2024, 07:30 Game Time**:
 
-**Update 28 Oct 2024, 0:30 Game Time**:
-* Fixed issues with updating toolbar with Solak-o'-lantern spoils.
-* Fixed issues with counting Solak-o'-lantern spoils drop from Maize Maze.
+* Added tracking of mystery gift contents
 
-**Update 19 Oct 2024, 13:30 Game Time**:
+**Update 2 December 2024, 20:45 Game Time**:
 
-* Fixed the total bag of spoils rewards display not being updated live when opening spoils.
-* Fixed an [issue](/../../issues/3) with Weapon Poison++ breaking capture.
-* Fixed an [issue](/../../issues/4) with edge case of having the same skilling reward in the same tick.
-* Fixed an [issue](/../../issues/5) with rewards other than spoils being logged as Maize Maze rewards.
+* Added tracking of christmas papers exchanged.
+* Beta testing has officially started! Please report any problems you encounter in Issues with a clear description and preferably a screenshot.
 
-**Update 17 Oct 2024, 20:00 Game Time**:
+**Update 29 November 2024, 20:45 Game Time**:
 
-* Official release! If new issues are discovered, the beta version will still be used for testing potential fixes.
-
-**Update 17 Oct 2024, 17:30 Game Time**:
-
-* Fixed double spooky token drops not being properly added together.
-* Added an Alt1 toolbar message of which spoils it has detected (requires overlay permission).
-
-**Update 16 Oct 2024, 20:00 Game Time**:
-
-* **Breaking change**: Introduced source tracking for each individual type of spoils:
-  * This works by tracking the tooltip when opening the bags with the mouse. So please, click the bags and don't keybind them 😇
-  * The tracked source is being displayed on screen if overlay is enabled for the app. Don't open until you see this display, otherwise the source may be wrong!
-  * You can check the data for the sources by using the right-click context-menu on the header:
-  ![context menu](/assets/contextmenu.png)
-* Fixed a lot of minor processing bux yesterday.
-
-**Update 14 Oct 2024, 14:00 Game Time**:
-
-* [Beta release!](https://exinferi.github.io/HarvestHollowHaul/)
+* [Beta release!](https://exinferi.github.io/ChristmasTracker/)
+  * Reworked HarvestHollowHaul to work for the soon™ christmas presents
+  * Adjusted chat comparison for duplicates to hopefully work a bit faster
+  * Obviously this beta does nothing at time of release, since the event hasn't started yet >.<
 
 ## Special thanks
 
@@ -90,7 +67,8 @@ And of course all my lovely clannies in [Lootbeams](https://runepixels.com/clans
 ## My other apps
 
 [WildyRewards](https://github.com/ExInferi/WildyRewards): Wilderness Flash Event Rewards Tracker  
+[HarvestHollowHaul](https://github.com/ExInferi/HarvestHollowHaul): Halloween Event Rewards Tracker  
 [BeachTracker](https://github.com/ExInferi/BeachTracker): Beach 2024 Rewards Tracker - archived  
-[PumpkinTracker](https://github.com/ExInferi/PumpkinTracker): Halloween 2023 Smashing/Party Pumkin Rewards Tracker - archived  
+[PumpkinTracker](https://github.com/ExInferi/PumpkinTracker): Halloween 2023 Smashing/Party Pumpkin Rewards Tracker - archived  
 [Tax Calculator](https://runeapps.org/forums/viewtopic.php?id=1508): Basic app to calculate the tax you have to pay at any given value  
 [DgTracker](https://runeapps.org/forums/viewtopic.php?id=1452): Manual tracking of key doors, gatestones and boss rooms for dungeoneering floors

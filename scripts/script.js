@@ -4,7 +4,7 @@ import TTReader from './tooltip.js';
 A1lib.identifyApp('appconfig.json');
 
 // Set up main constants
-const APP_PREFIX = 'harvestHollowHaul';
+const APP_PREFIX = 'XMAS_';
 
 const SELECTED_CHAT = `${APP_PREFIX}Chat`;
 const DATA_STORAGE = `${APP_PREFIX}Data`;
@@ -13,24 +13,27 @@ const TOTALS_PREFIX = `${APP_PREFIX}Totals_`;
 const DISPLAY_MODE = `${APP_PREFIX}Display`;
 
 // Themed app color
-const COL = [255, 102, 0];
+const COL = [206, 165, 0];
 
 // Additional constants
 const appURL = window.location.href.replace('index.html', '');
 const appColor = A1lib.mixColor(...COL);
 const rgbColor = `rgb(${COL[0]}, ${COL[1]}, ${COL[2]})`;
 const showTotals = document.getElementById('show-totals');
+const _ = undefined;
 
-// CUSTOM: Tier colors
+// CUSTOM: Present colors
+const whiteColor = A1lib.mixColor(224, 220, 219);
 const blueColor = A1lib.mixColor(5, 103, 174);
 const purpleColor = A1lib.mixColor(112, 53, 218);
 const goldColor = A1lib.mixColor(248, 181, 23);
+const greenColor = A1lib.mixColor(107, 165, 48);
 
 // Reward history optimization
 let currentList = 0;
 const itemsPerList = 25;
 
-// CUSTOM: Source tracking for spoils through tooltips
+// CUSTOM: Source tracking for present through tooltips
 const ttReader = new TTReader;
 ttReader.farTooltip = true;
 ttReader.trackinactive = true;
@@ -39,27 +42,10 @@ ttReader.maxw = 500;
 ttReader.offsetx = 10;
 let delay = 300;
 
-const spoils = [
-  { id: 'basic-phosphosseous', text: 'Basic Phosphosseous Totals', storage: `${APP_PREFIX}Basic_Phosphosseous_spoils` },
-  { id: 'basic-skaraxxi', text: 'Basic Skaraxxi Totals', storage: `${APP_PREFIX}Basic_Skaraxxi_spoils` },
-  { id: 'basic-solak-o-lantern', text: 'Basic Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Basic_Solak-o'-lantern_spoils` },
-  { id: 'impressive-phosphosseous', text: 'Impressive Phosphosseous Totals', storage: `${APP_PREFIX}Impressive_Phosphosseous_spoils` },
-  { id: 'impressive-skaraxxi', text: 'Impressive Skaraxxi Totals', storage: `${APP_PREFIX}Impressive_Skaraxxi_spoils` },
-  { id: 'impressive-solak-o-lantern', text: 'Impressive Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Impressive_Solak-o'-lantern_spoils` },
-  { id: 'prestigious-phosphosseous', text: 'Prestigious Phosphosseous Totals', storage: `${APP_PREFIX}Prestigious_Phosphosseous_spoils` },
-  { id: 'prestigious-skaraxxi', text: 'Prestigious Skaraxxi Totals', storage: `${APP_PREFIX}Prestigious_Skaraxxi_spoils` },
-  { id: 'prestigious-solak-o-lantern', text: 'Prestigious Solak-o\'-lantern Totals', storage: `${APP_PREFIX}Prestigious_Solak-o'-lantern_spoils` }
-];
-
-const spoilsRegex = /Open\s(.*?\sspoils)/;
-let currentSpoils = 'bag of spoils';
+// CUSTOM: presents tracking
+const presentRegex = /Open\s(.*?\sChristmas\sPresent)/;
+let currentPresent = _;
 let overlayColor = appColor;
-// Default titlebar state
-util.setTitleBar('Currently not tracking any spoils.', 'icon', 'icon', 'No spoils detected');
-// Clear titlebar on reload/exit
-$(window).bind('beforeunload', () => {
-  util.setTitleBar('', null, null, '');
-});
 
 function startTrack() {
   ttReader.track((state) => {
@@ -69,26 +55,48 @@ function startTrack() {
       if (debugChat) {
         console.log('Tooltip:', text);
       }
-      const match = text.match(spoilsRegex);
+      const match = text.match(presentRegex);
       if (match) {
-        if (currentSpoils === match[1].trim()) {
+        if (currentPresent === match[1].trim()) {
           return;
         }
         alt1.overLayClearGroup('tracking');
-        currentSpoils = match[1].trim();
+        currentPresent = match[1].trim();
         const width = Math.round(alt1.rsWidth / 2);
-        // Set overlay color and titlebar based on the type of spoils
-        const spoilsType = /(B.*|I.*|P.*)\s(Ph.*|Sk.*|So.*)\sspoils/;
-        const typeMatch = currentSpoils.match(spoilsType);
-        if (typeMatch[1] === 'Basic') overlayColor = blueColor;
-        else if (typeMatch[1] === 'Impressive') overlayColor = purpleColor;
-        else if (typeMatch[1] === 'Prestigious') overlayColor = goldColor;
-        // Update the titlebar with current spoils type icons
-        util.setTitleBar(`Tracking: ${currentSpoils.replace(/-/g, ' ')}`, typeMatch[1], typeMatch[2].replace(/-/g, '_'));
+        // Set overlay color and titlebar based on the type of present
+        const presentType = /(W.*|B.*|P.*|G.*|S.*)\sChristmas\sPresent/;
+        const typeMatch = currentPresent.match(presentType);
+        switch (typeMatch[1]) {
+          case 'White':
+            overlayColor = whiteColor;
+            break;
+          case 'Blue':
+            overlayColor = blueColor;
+            break;
+          case 'Purple':
+            overlayColor = purpleColor;
+            break;
+          case 'Gold':
+            overlayColor = goldColor;
+            break;
+          case "Santa's":
+            overlayColor = greenColor;
+            break;
+        }
+        // Update the titlebar with current present type icons
+        util.setTitleBar(`Tracking: ${currentPresent}`, _, typeMatch[1]);
         // Set overlay text and rectangle for tooltip
         alt1.overLaySetGroup('tracking');
-        alt1.overLayTextEx(`Tracking: ${currentSpoils}`, overlayColor, 24, width, 100, 1000, 'Arial', true, true);
-        alt1.overLayRect(overlayColor, state.area.x - 2, state.area.y - 2, state.area.width + 4, state.area.height + 4, 1000, 2);
+        alt1.overLayTextEx(`Tracking: ${currentPresent}`, overlayColor, 24, width, 100, 1000, 'Arial', true, true);
+        alt1.overLayRect(
+          overlayColor,
+          state.area.x - 2,
+          state.area.y - 2,
+          state.area.width + 4,
+          state.area.height + 4,
+          1000,
+          2
+        );
       }
     }
   }, delay);
@@ -96,7 +104,7 @@ function startTrack() {
 A1lib.on('alt1pressed', () => {
   // Toggle tooltip reading in debug mode
   if (debugChat) {
-  ttReader.tracking ? ttReader.stopTrack() : startTrack();
+    ttReader.tracking ? ttReader.stopTrack() : startTrack();
   }
 });
 
@@ -109,10 +117,11 @@ reader.readargs = {
     A1lib.mixColor(102, 152, 255), // Common reward color (blue)
     A1lib.mixColor(163, 53, 238), // Uncommon reward color (purple)
     A1lib.mixColor(255, 128, 0), // Rare reward color (orange)
-    blueColor, // Basic spoils (blue)
-    purpleColor,// Impressive spoils (purple)
-    goldColor, // Prestigious spoils (gold)
-    appColor, // Dark orange text
+    whiteColor, // White Christmas Present
+    blueColor, // Blue Christmas Present
+    purpleColor, // Purple Christmas Present
+    goldColor, // Gold Christmas Present
+    greenColor, // Santa's Christmas Present
   ],
   backwards: true,
 };
@@ -125,21 +134,13 @@ let saveChatHistory = util.getSessionStorage(CHAT_SESSION) || [];
 if (!util.getLocalStorage(DISPLAY_MODE)) util.setLocalStorage(DISPLAY_MODE, 'history');
 
 // CUSTOM: Setup additional storage variables
-let clanGoodieBags = parseInt(util.getLocalStorage(`${APP_PREFIX}ClanGoodieBags`)) || 0;
-let maizeMaze = parseInt(util.getLocalStorage(`${APP_PREFIX}MaizeMaze`)) || 0;
-
-// CUSTOM: Setup storage variables for spoils - reworked
-let basic1 = parseInt(util.getLocalStorage(spoils[0].storage)) || 0;
-let basic2 = parseInt(util.getLocalStorage(spoils[1].storage)) || 0;
-let basic3 = parseInt(util.getLocalStorage(spoils[2].storage)) || 0;
-let impressive1 = parseInt(util.getLocalStorage(spoils[3].storage)) || 0;
-let impressive2 = parseInt(util.getLocalStorage(spoils[4].storage)) || 0;
-let impressive3 = parseInt(util.getLocalStorage(spoils[5].storage)) || 0;
-let prestigious1 = parseInt(util.getLocalStorage(spoils[6].storage)) || 0;
-let prestigious2 = parseInt(util.getLocalStorage(spoils[7].storage)) || 0;
-let prestigious3 = parseInt(util.getLocalStorage(spoils[8].storage)) || 0;
-
-let bagsOfSpoils = basic1 + basic2 + basic3 + impressive1 + impressive2 + impressive3 + prestigious1 + prestigious2 + prestigious3;
+let whites = parseInt(util.getLocalStorage(`${APP_PREFIX}WhiteChristmasPresent`)) || 0;
+let blues = parseInt(util.getLocalStorage(`${APP_PREFIX}BlueChristmasPresent`)) || 0;
+let purples = parseInt(util.getLocalStorage(`${APP_PREFIX}PurpleChristmasPresent`)) || 0;
+let golds = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldChristmasPresent`)) || 0;
+let santas = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasChristmasPresent`)) || 0;
+let exchanged = parseInt(util.getLocalStorage(`${APP_PREFIX}Exchanged`)) || 0;
+let mysterygifts = parseInt(util.getLocalStorage(`${APP_PREFIX}MysteryGifts`)) || 0;
 
 // Find all visible chatboxes on screen
 if (!window.alt1) {
@@ -153,16 +154,27 @@ window.addEventListener('load', function () {
     reader.read();
     startTrack();
   }
-})
+});
 
+// Default titlebar state
+if (window.alt1 && alt1.permissionInstalled) {
+  util.setTitleBar('Currently not tracking any presents.', 'No presents detected', 'icon', 'icon');
+} else if (window.alt1 && !alt1.permissionInstalled) {
+  // Tell the user to install the app
+  $('#item-list').html('<p style="padding-inline:1em">Click the "ADD APP" button above to install the app.</p>');
+}
+// Clear titlebar on reload/exit
+$(window).bind('beforeunload', () => {
+  util.setTitleBar('');
+  window.alt1?.clearBinds();
+});
 
 let findChat = setInterval(function () {
   if (!window.alt1) {
     clearInterval(findChat);
     return;
   }
-  if (reader.pos === null)
-    reader.find();
+  if (reader.pos === null) reader.find();
   else {
     clearInterval(findChat);
     reader.pos.boxes.map((box, i) => {
@@ -206,7 +218,7 @@ function readChatbox() {
   let opts = reader.read() || [];
   let chat = '';
   // CUSTOM: Ignore currency pouch
-  const ignoreLine = /\[\d+:\d+:\d+\] The following has been added to your currency pouch: \d+ x Spooky tokens\.\s?/g;
+  const ignoreLine = /\[\d+:\d+:\d+\] \d*,?\d* coins have been added to your money pouch.\s?/g;
   for (let a in opts) {
     chat += opts[a].text.replace(',', '') + ' ';
   }
@@ -220,92 +232,95 @@ function readChatbox() {
   }
   // Check if the chat message contains any of the following strings
   const found = [
-    chat.indexOf('You open the clan goodie bag') > -1,
-    chat.indexOf('You open the bag of spoils') > -1,
-    chat.indexOf('While skilling you find') > -1,
-    chat.indexOf('You receive:') > -1,
+    chat.indexOf('You open the Christmas present and receive') > -1,
+    chat.indexOf('Christmas wrapping paper and receive') > -1,
+    chat.indexOf('You unwrap your mystery gift and receive') > -1,
   ];
 
-  const foundBag = found[0] || found[1];
-  const foundSkilling = found[2];
-  const foundSpoils = found[3];
-  if (found.includes(true)) {
-    if (foundBag) {
-      const regex = /(\[\d+:\d+:\d+\]) You open the (clan goodie bag|bag of spoils)\.? and receive: \s?((?:\1 \d+[ x ]?[\w\s'+\-!()\d]+ ?)+)/g
-      const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+\-!()\d]*)/g;
-      const rewardRegex = new RegExp(regex.source);
-      const rewards = chat.match(regex);
-      let counter = null;
+  const foundPresent = found[0];
+  const foundExchange = found[1];
+  const foundMystery = found[2];
 
-      rewards.forEach((reward) => {
-        const newReward = reward.match(rewardRegex);
-        let source = newReward[2];
-        const items = newReward[3].match(itemRegex);
-        switch (source) {
-          case 'bag of spoils':
-            counter = `${APP_PREFIX}${currentSpoils.replace(/ /g, '_')}`;
-            source = currentSpoils;
-            break;
-          case 'clan goodie bag':
-            counter = `${APP_PREFIX}ClanGoodieBags`;
-            break;
-        }
-        saveMultipleItems(items, itemRegex, source, counter);
-      });
-    } 
-    if (foundSkilling) {
-      const regex = /(\[\d+:\d+:\d+\]) While skilling you find: [^[]*(?:\1 While*[^[]*)*/g;
-      const itemRegex = /\[\d+:\d+:\d+\] While skilling you find: (\d+ x )?((?:[\w\s()]+)*)/g;
-      const rewards = chat.match(regex);
+  if (foundPresent) {
+    const regex =
+      /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s':+\-!()\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
+    const rewardRegex = new RegExp(regex.source);
+    const rewards = chat.match(regex);
+    let counter = null;
 
-      const addCount = rewards.flatMap((reward) => {
-        const matches = reward.match(itemRegex);
-        return matches.map((match) => {
-          return match.replace(/While skilling you find:\s(?!\d+\sx)/g, 'While skilling you find: 1 x ');
-        });
-      });
-      saveMultipleItems(addCount, itemRegex, 'skilling');
-    } 
-    if (foundSpoils) {
-      const regex = /(\[\d+:\d+:\d+\]) You receive: .*spoils\s+(?:\1.*spoils)/g;
-      const itemRegex = /\[\d+:\d+:\d+\] You receive: (\d x )?((?:[\w\s()'-]+spoils))/g;
-      const rewards = chat.match(regex);
-      let counter = `${APP_PREFIX}MaizeMaze`;
-      if (rewards) {
-        const addCount = rewards.flatMap((reward) => {
-          const matches = reward.match(itemRegex);
-          return matches.map((match) => {
-            return match.replace(/You receive:\s(?!\d+\sx)/g, 'You receive: 1 x ');
-          });
-        });
-
-        saveMultipleItems(addCount, itemRegex, 'maize maze', counter);
+    rewards.forEach((reward) => {
+      if (isLogged(reward)) return;
+      const newReward = reward.match(rewardRegex);
+      const source = currentPresent ?? 'Unknown';
+      counter = `${APP_PREFIX}${source.replace(/[\s']/g, '')}`;
+      const items = newReward[2].match(itemRegex);
+      if (items.length === 1) {
+        saveSingleItem(items[0], itemRegex, source, counter);
       } else {
-        const addCount = chat.match(itemRegex);
-        saveSingleItem(addCount[0], itemRegex, 'maize maze', counter);
+        saveMultipleItems(items, itemRegex, source, counter);
       }
-    }
+    });
+  }
+  if (foundExchange) {
+    const regex =
+      /(\[\d+:\d+:\d+\]) You exchange (\d+) Christmas wrapping paper and receive: \s?((?:\1 \d+[ x ][\w\s'\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x\s*([\w\s']*)/g;
+    const rewardRegex = new RegExp(regex.source);
+    const rewards = chat.match(regex);
+    const counter = `${APP_PREFIX}Exchanged`;
+    rewards.forEach((reward) => {
+      if (isLogged(reward)) return;
+      const newReward = reward.match(rewardRegex);
+      const source = 'Exchanged';
+      const items = newReward[3].match(itemRegex);
+      const amount = parseInt(newReward[2]);
+
+      saveCustomAmount(items, itemRegex, source, counter, amount);
+    });
+  }
+  if (foundMystery) {
+    const regex = /(\[\d+:\d+:\d+\]) You unwrap your mystery gift and receive: \s?((?:\1 \d+[ x ][\w\s':+\-!()\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
+    const rewardRegex = new RegExp(regex.source);
+    const rewards = chat.match(regex);
+    const counter = `${APP_PREFIX}MysteryGifts`;
+    const source = 'Mystery Gift';
+
+    rewards.forEach((reward) => {
+      if (isLogged(reward)) return;
+      const newReward = reward.match(rewardRegex);
+      const items = newReward[2].match(itemRegex);
+      saveMultipleItems(items, itemRegex, source, counter);
+    });
   }
 }
 // Save single item
-function saveSingleItem(match, regex, source, counter) {
-  if (counter && !saveChatHistory.includes(match.trim())) {
+function saveSingleItem(match, regex, source, counter = null) {
+  if (counter) {
     increaseCounter(counter);
   }
-
   saveItem(regex, match, source);
 }
 
 // In case of possible multiple items, save them all
 function saveMultipleItems(match, regex, source, counter = null) {
   const filtered = filterItems(match, regex);
-  const alreadySaved = filtered.some(item => saveChatHistory.includes(item.trim()));
 
-  if (counter && !alreadySaved) {
+  if (counter) {
     increaseCounter(counter);
   }
   filtered.forEach((item) => {
-    saveItem(regex, item, source)
+    saveItem(regex, item, source);
+  });
+}
+
+// Special case for custom amount
+function saveCustomAmount(items, regex, source, counter, amount) {
+  increaseCounter(counter, amount);
+
+  items.forEach((item) => {
+    saveItem(regex, item, source);
   });
 }
 
@@ -330,7 +345,7 @@ function filterItems(items, regex) {
   }, {});
 
   // Then, create a new array with updated quantities for each item
-  const updatedItemsArray = items.map(itemString => {
+  const updatedItemsArray = items.map((itemString) => {
     const match = itemString.match(cleanRegex);
     if (match) {
       const itemName = match[2].trim();
@@ -340,14 +355,14 @@ function filterItems(items, regex) {
         const digit = group1 || group2 || group3;
         if (debugChat) {
           console.debug('group1', group1, 'group2', group2, 'group3', group3);
-          console.log('Replaced:',digit, totalQuantity, match.replace(digit, totalQuantity));
+          console.log('Replaced:', digit, totalQuantity, match.replace(digit, totalQuantity));
         }
         return match.replace(digit, totalQuantity);
       });
     }
     return itemString;
   });
-  // Update the saveChatHistory with the original item that was modified
+   // Update the saveChatHistory with the original item that was modified
   items.forEach(item => {
     if (!updatedItemsArray.includes(item) && !saveChatHistory.includes(item.trim())) {
       saveChatHistory.push(item.trim());
@@ -356,30 +371,38 @@ function filterItems(items, regex) {
   return updatedItemsArray;
 }
 
+// Function to check session storage for chat log
+function isLogged(chat) {
+  if (saveChatHistory.includes(chat.trim())) {
+    console.debug('Duplicate:', chat.trim());
+    return true;
+  } else {
+    saveChatHistory.push(chat.trim());
+    util.setSessionStorage(CHAT_SESSION, saveChatHistory);
+  }
+  return false;
+}
+
 // Function to increase the counter in local storage
-function increaseCounter(counter) {
+function increaseCounter(counter, add = 1) {
   let num = parseInt(localStorage.getItem(counter)) || 0;
-  num += 1;
+  num += add;
   localStorage.setItem(counter, num);
   // Trigger event to update the counter variable -> see bottom part of the script
   const options = {
     key: counter,
-    oldValue: JSON.stringify(num - 1),
-    newValue: JSON.stringify(num)
-  }
+    oldValue: JSON.stringify(num - add),
+    newValue: JSON.stringify(num),
+  };
   dispatchEvent(new StorageEvent('storage', options));
 }
 
 function saveItem(regex, item, src) {
   // Adjust regex to remove any flags
   const cleanRegex = new RegExp(regex.source);
-  if (saveChatHistory.includes(item.trim())) {
-    console.debug('Duplicate:', item.trim());
-    return;
-  }
-  saveChatHistory.push(item.trim());
-  util.setSessionStorage(CHAT_SESSION, saveChatHistory);
-
+  // Check if the item has already been saved
+  if (isLogged(item.trim())) return;
+ 
   const reward = item.match(cleanRegex);
   const date = new Date();
 
@@ -391,7 +414,7 @@ function saveItem(regex, item, src) {
   const getItem = {
     item: `${itemAmount} x ${itemName}`,
     source: itemSource,
-    time: itemTime
+    time: itemTime,
   };
   console.log(getItem);
   saveData.push(getItem);
@@ -400,23 +423,26 @@ function saveItem(regex, item, src) {
   const options = {
     key: DATA_STORAGE,
     oldValue: JSON.stringify(saveData.slice(-1)),
-    newValue: JSON.stringify(saveData)
-  }
+    newValue: JSON.stringify(saveData),
+  };
   dispatchEvent(new StorageEvent('storage', options));
 }
 
 // Function to determine the total of all items recorded
 function getTotal(source) {
   let total = {};
-  saveData.forEach(item => {
+  saveData.forEach((item) => {
+    // CUSTOM: Exclude Papers Exchanged
+    if (item.source.includes('Exchanged') && source !== 'Exchanged') {
+      return;
+    }
     if (item.source.includes(source) || source === undefined) {
       const data = item.item.split(' x ');
-      total[data[1]] = parseInt(total[data[1]]) + parseInt(data[0]) || parseInt(data[0])
+      total[data[1]] = parseInt(total[data[1]]) + parseInt(data[0]) || parseInt(data[0]);
     }
-  })
+  });
   return total;
 }
-
 
 // Function to display totals on top of the list
 function displayTotal(text, total) {
@@ -429,19 +455,23 @@ function appendItems(items) {
     $('#load-more').remove();
   }
 
-  items.forEach(item => {
+  items.forEach((item) => {
     $('#item-list').append(`<li title="From: ${item.source} @ ${util.formatDateTime(item.time)}">${item.item}</li>`);
   });
-
 }
 // Function to create a list of all items and their totals
 function createList(total, type) {
   if (type === 'history') {
     const start = currentList * itemsPerList;
     const end = start + itemsPerList;
-    const itemsToShow = [...saveData].reverse().slice(start, end);
+    // const itemsToShow = [...saveData].reverse().slice(start, end);
+    //CUSTOM: Filter out items with source 'Exchanged'
+    const filteredData = saveData.filter(item => !item.source.includes('Exchanged'));
 
-    if (end < saveData.length) {
+    const itemsToShow = [...filteredData].reverse().slice(start, end);
+    // if (end < saveData.length) {
+    // CUSTOM: Filter out items with source 'Exchanged'
+    if (end < filteredData.length) {
       appendItems(itemsToShow);
 
       // Create the load more button (again)
@@ -451,9 +481,13 @@ function createList(total, type) {
         createList(total, type);
       });
     } else {
-      const remaining = saveData.length - start;
+      // const remaining = saveData.length - start;
+      // CUSTOM: Filter out items with source 'Exchanged'
+      const remaining = filteredData.length - start;
       if (remaining > 0) {
-        const remainingItems = saveData.reverse().slice(start, start + remaining);
+        // const remainingItems = saveData.reverse().slice(start, start + remaining);
+        // CUSTOM: Filter out items with source 'Exchanged'
+        const remainingItems = filteredData.reverse().slice(start, start + remaining);
         appendItems(remainingItems);
       }
     }
@@ -467,7 +501,7 @@ function createList(total, type) {
 function showItems() {
   let display = util.getLocalStorage(DISPLAY_MODE) || 'history';
   let total = getTotal();
-  let text = 'Total Rewards';
+  let text = 'Total Presents Opened';
   let type = null;
 
   if (display !== 'history') {
@@ -480,7 +514,7 @@ function showItems() {
   // TODO: Change layout with tabs, so this code can be removed
   switch (display) {
     case 'total': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="bag-of-spoils" title="Click to show all Bag of Spoils Totals">Reward Item Totals</li>`);
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="white-present" title="Click to show all White Present Totals">Reward Item Totals</li>`);
     }
       break;
     case 'history': {
@@ -491,83 +525,46 @@ function showItems() {
     }
       break;
     // CUSTOM: Additional displays for custom sources
-    case 'bag-of-spoils': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="clan-goodie-bag" title="Click to show all Clan Goodie Bag Totals">Bag of Spoils Reward Totals</li>`);
-      total = getTotal('spoils');
-      text = 'Bags of Spoils Opened';
+    case 'white-present': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="blue-present" title="Click to show Blue Present Totals">White Present Totals</li>`);
+      total = getTotal('White Christmas Present');
+      text = 'White Presents Opened';
     }
       break;
-    case 'clan-goodie-bag': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="maize-maze" title="Click to show all Maize Maze Totals">Clan Goodie Bag Drop Totals</li>`);
-      total = getTotal('clan goodie bag');
-      text = 'Clan Goodie Bags Opened';
+    case 'blue-present': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="purple-present" title="Click to show Purple Present Totals">Blue Present Totals</li>`);
+      total = getTotal('Blue Christmas Present');
+      text = 'Blue Presents Opened';
     }
       break;
-    case 'maize-maze': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="skilling" title="Click to show all Skilling Totals">Maize Maze Totals</li>`);
-      total = getTotal('maize maze');
-      text = 'Maize Maze Completed';
+    case 'purple-present': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="gold-present" title="Click to show Gold Present Totals">Purple Present Totals</li>`);
+      total = getTotal('Purple Christmas Present');
+      text = 'Purple Presents Opened';
     }
       break;
-    case 'skilling': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Skilling Totals</li>`);
-      total = getTotal('skilling');
-      text = 'Skilling Rewards Found';
+    case 'gold-present': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="santas-present" title="Click to show Santa's Present Totals">Gold Present Totals</li>`);
+      total = getTotal('Gold Christmas Present');
+      text = 'Gold Presents Opened';
     }
       break;
-    // CUSTOM: Additional displays for all individual spoils
-    case 'basic-phosphosseous': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Basic Phosphosseous');
-      text = 'Basic Phosphosseous Totals';
+    case 'santas-present': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Santa's Present Totals</li>`);
+      total = getTotal('Santa\'s Christmas Present');
+      text = 'Santa\'s Presents Opened';
     }
       break;
-    case 'basic-skaraxxi': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Basic Skaraxxi');
-      text = 'Basic Skaraxxi Totals';
+    case 'exchanged': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Papers Exchanged</li>`);
+      total = getTotal('Exchanged');
+      text = 'Papers Exchanged';
     }
       break;
-    case 'basic-solak-o-lantern': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Basic Solak-o\'-lantern');
-      text = 'Basic Solak-o\'-lantern Totals';
-    }
-      break;
-    case 'impressive-phosphosseous': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Impressive Phosphosseous');
-      text = 'Impressive Phosphosseous Totals';
-    }
-      break;
-    case 'impressive-skaraxxi': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Impressive Skaraxxi');
-      text = 'Impressive Skaraxxi Totals';
-    }
-      break;
-    case 'impressive-solak-o-lantern': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Impressive Solak-o\'-lantern');
-      text = 'Impressive Solak-o\'-lantern Totals';
-    }
-      break;
-    case 'prestigious-phosphosseous': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Prestigious Phosphosseous');
-      text = 'Prestigious Phosphosseous Totals';
-    }
-      break;
-    case 'prestigious-skaraxxi': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Prestigious Skaraxxi');
-      text = 'Prestigious Skaraxxi Totals';
-    }
-      break;
-    case 'prestigious-solak-o-lantern': {
-      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to go back to Reward History display">Right-click to switch display</li>`);
-      total = getTotal('Prestigious Solak-o\'-lantern');
-      text = 'Prestigious Solak-o\'-lantern Totals';
+    case 'mystery-gift': {
+      $('#item-list').append(`<li id="switch-display" class="nisbutton nissmallbutton" data-show="history" title="Click to show the Reward History">Mystery Gift Totals</li>`);
+      total = getTotal('Mystery Gift');
+      text = 'Mystery Gifts Opened';
     }
       break;
   }
@@ -576,51 +573,31 @@ function showItems() {
     let totalRewards = 0;
        
     switch (display) {
-      case "total":
-      case "history":
-        totalRewards = saveData.length;
+      case 'total':
+      case 'history':
+        totalRewards = whites + blues + purples + golds + santas;
         break;
       // CUSTOM: Additional totals for custom sources
-      case "bag-of-spoils":
-        totalRewards = bagsOfSpoils;
+      case 'white-present':
+        totalRewards = whites;
         break;
-      case "clan-goodie-bag":
-        totalRewards = clanGoodieBags;
+      case 'blue-present':
+        totalRewards = blues;
         break;
-      case "maize-maze":
-        totalRewards = maizeMaze;
+      case 'purple-present':
+        totalRewards = purples;
         break;
-      case "skilling":
-        let skillingRewards = saveData.filter(item => item.source === 'skilling');
-        totalRewards = skillingRewards.length;
+      case 'gold-present':
+        totalRewards = golds;
         break;
-      // CUSTOM: Additional totals for all individual spoils
-      case "basic-phosphosseous":
-        totalRewards = basic1;
+      case 'santas-present':
+        totalRewards = santas;
         break;
-      case "basic-skaraxxi":
-        totalRewards = basic2;
+      case 'exchanged':
+        totalRewards = exchanged;
         break;
-      case "basic-solak-o-lantern":
-        totalRewards = basic3;
-        break;
-      case "impressive-phosphosseous":
-        totalRewards = impressive1;
-        break;
-      case "impressive-skaraxxi":
-        totalRewards = impressive2;
-        break;
-      case "impressive-solak-o-lantern":
-        totalRewards = impressive3;
-        break;
-      case "prestigious-phosphosseous":
-        totalRewards = prestigious1;
-        break;
-      case "prestigious-skaraxxi":
-        totalRewards = prestigious2;
-        break;
-      case "prestigious-solak-o-lantern":
-        totalRewards = prestigious3;
+      case 'mystery-gift':	
+        totalRewards = mysterygifts;	
         break;
     }
 
@@ -634,6 +611,7 @@ function showItems() {
 function createExportData(type) {
   let str = 'Item,Qty\n';
   let total = getTotal();
+  let totalRewards = whites + blues + purples + golds + santas;
   switch (type) {
     case 'total':
       break;
@@ -641,47 +619,34 @@ function createExportData(type) {
       str = 'Item,Source,Date,Time\n';
       break;
     // CUSTOM: Additional exports for custom sources
-    case 'bag-of-spoils':
-      total = getTotal('spoils');
+    case 'white-present':
+      total = getTotal('White Christmas Present');
+      totalRewards = whites;
       break;
-    case 'clan-goodie-bag':
-      total = getTotal('clan goodie bag');
+    case 'blue-present':
+      total = getTotal('Blue Christmas Present');
+      totalRewards = blues;
       break;
-    case 'maize-maze':
-      total = getTotal('maize maze');
+    case 'purple-present':
+      total = getTotal('Purple Christmas Present');
+      totalRewards = purples;
       break;
-    case 'skilling':
-      total = getTotal('skilling');
+    case 'gold-present':
+      total = getTotal('Gold Christmas Present');
+      totalRewards = golds;
       break;
-    // CUSTOM: Additional exports for all individual spoils
-    case 'basic-phosphosseous':
-      total = getTotal('Basic Phosphosseous');
+    case 'santas-present':
+      total = getTotal("Santa's Christmas Present");
+      totalRewards = santas;
       break;
-    case 'basic-skaraxxi':
-      total = getTotal('Basic Skaraxxi');
+    case 'exchanged':
+      total = getTotal('Exchanged');
+      totalRewards = exchanged;
       break;
-    case 'basic-solak-o-lantern':
-      total = getTotal('Basic Solak-o\'-lantern');
+    case 'mystery-gift':
+      total = getTotal('Mystery Gift');
+      totalRewards = mysterygifts;
       break;
-    case 'impressive-phosphosseous':
-      total = getTotal('Impressive Phosphosseous');
-      break;
-    case 'impressive-skaraxxi':
-      total = getTotal('Impressive Skaraxxi');
-      break;
-    case 'impressive-solak-o-lantern':
-      total = getTotal('Impressive Solak-o\'-lantern');
-      break;
-    case 'prestigious-phosphosseous':
-      total = getTotal('Prestigious Phosphosseous');
-      break;
-    case 'prestigious-skaraxxi':
-      total = getTotal('Prestigious Skaraxxi');
-      break;
-    case 'prestigious-solak-o-lantern':
-      total = getTotal('Prestigious Solak-o\'-lantern');
-      break;
-    // End custom
     default: {
       console.warn('Display mode:', util.getLocalStorage(DISPLAY_MODE));
       throw new Error('Unknown display mode');
@@ -693,7 +658,10 @@ function createExportData(type) {
       str += `${item.item},${item.source},${util.formatDateTime(item.time)}\n`;
     });
   } else {
-    Object.keys(total).sort().forEach(item => str += `${item},${total[item]}\n`);
+    Object.keys(total)
+      .sort()
+      .forEach((item) => (str += `${item},${total[item]}\n`));
+      str += `Total rewards,${totalRewards}\n`;
   }
   return str;
 }
@@ -701,7 +669,6 @@ function createExportData(type) {
 // Event listeners
 
 $(function () {
-
   // Changing which chatbox to read
   $('.chat').change(function () {
     reader.pos.mainbox = reader.pos.boxes[$(this).val()];
@@ -726,28 +693,31 @@ $(function () {
         fileName = `${APP_PREFIX}HistoryExport_${downloadDate}.csv`;
         break;
       // CUSTOM: Additional exports names for custom sources
-      case 'bag-of-spoils':
-        fileName = `${APP_PREFIX}BagOfSpoilsTotalExport_${downloadDate}.csv`;
+      case 'white-present':
+        fileName = `${APP_PREFIX}WhitePresentTotalExport_${downloadDate}.csv`;
         break;
-      case 'clan-goodie-bag':
-        fileName = `${APP_PREFIX}ClanGoodieBagTotalExport_${downloadDate}.csv`;
+      case 'blue-present':
+        fileName = `${APP_PREFIX}BluePresentTotalExport_${downloadDate}.csv`;
         break;
-      case 'maize-maze':
-        fileName = `${APP_PREFIX}MaizeMazeTotalExport_${downloadDate}.csv`;
+      case 'purple-present':
+        fileName = `${APP_PREFIX}PurplePresentTotalExport_${downloadDate}.csv`;
         break;
-      case 'skilling':
-        fileName = `${APP_PREFIX}SkillingRewardsTotalExport_${downloadDate}.csv`;
+      case 'gold-present':
+        fileName = `${APP_PREFIX}GoldPresentTotalExport_${downloadDate}.csv`;
         break;
+      case 'santas-present':
+        fileName = `${APP_PREFIX}SantasPresentTotalExport_${downloadDate}.csv`;
+        break;
+      case 'exchanged':
+        fileName = `${APP_PREFIX}PapersExchangedExport_${downloadDate}.csv`;
+        break;
+      case 'mystery-gift':
+        fileName = `${APP_PREFIX}MysteryGiftsExport_${downloadDate}.csv`;
+        break
       default:
     }
-    // CUSTOM: Additional export names for all individual spoils
-    spoils.forEach(spoil => {
-      if (display === spoil.id) {
-        fileName = `${APP_PREFIX}${spoil.text.replace(/ /g, '_')}TotalExport_${downloadDate}.csv`;
-      }
-    });
     const blob = new Blob([csv], {
-      type: 'text/csv;charset=utf-8;'
+      type: 'text/csv;charset=utf-8;',
     });
 
     util.downloadFile(blob, fileName);
@@ -758,20 +728,25 @@ $(function () {
     util.deleteLocalStorage(DATA_STORAGE, SELECTED_CHAT, DISPLAY_MODE, `${TOTALS_PREFIX}hide`, `${TOTALS_PREFIX}show`);
     util.deleteSessionStorage(CHAT_SESSION);
     // CUSTOM: Additional storage keys to clear
-    util.deleteLocalStorage(`${APP_PREFIX}ClanGoodieBags`, `${APP_PREFIX}MaizeMaze`);
-    spoils.forEach(spoil => {
-      util.deleteLocalStorage(spoil.storage);
-    });
+    util.deleteLocalStorage(
+      `${APP_PREFIX}WhiteChristmasPresent`,
+      `${APP_PREFIX}BlueChristmasPresent`,
+      `${APP_PREFIX}PurpleChristmasPresent`,
+      `${APP_PREFIX}GoldChristmasPresent`,
+      `${APP_PREFIX}SantasChristmasPresent`,
+      `${APP_PREFIX}Exchanged`,
+      `${APP_PREFIX}MysteryGifts`
+    );
     $('#show-totals').prop('checked', true);
 
     location.reload();
-  })
+  });
 
   // Toggle display mode
   $(document).on('click', '#switch-display', function () {
     util.setLocalStorage(DISPLAY_MODE, `${$(this).data('show')}`);
-    showItems()
-  })
+    showItems();
+  });
 
   // Right-click to change display mode
   const $displaySelect = $('#switch-menu');
@@ -779,14 +754,14 @@ $(function () {
   $displaySelect.find('ul').append(`
     <li data-show="history" title="Show reward history">Reward History</li>
     <li data-show="total" title="Show reward totals">Reward Totals</li>
-    <li data-show="bag-of-spoils" title="Show bag of spoils totals">Bag of Spoils Totals</li>
-    <li data-show="clan-goodie-bag" title="Show clan goodie bag totals">Clan Goodie Bag Totals</li>
-    <li data-show="maize-maze" title="Show maize maze totals">Maize Maze Totals</li>
-    <li data-show="skilling" title="Show skilling totals">Skilling Totals</li>
+    <li data-show="white-present" title="Show White Present Totals">White Present Totals</li>
+    <li data-show="blue-present" title="Show Blue Present Totals">Blue Present Totals</li>
+    <li data-show="purple-present" title="Show Purple Present Totals">Purple Present Totals</li>
+    <li data-show="gold-present" title="Show Gold Present Totals">Gold Present Totals</li>
+    <li data-show="santas-present" title="Show Santa's Present Totals">Santa's Present Totals</li>
+    <li data-show="exchanged" title="Show presents received from papers">Papers Exchanged</li>
+    <li data-show="mystery-gift" title="Show Mystery gift Totals">Mystery Gift Totals</li>
   `);
-  spoils.forEach(spoil => {
-    $displaySelect.find('ul').append(`<li data-show="${spoil.id}" title="Show ${spoil.text}">${spoil.text}</li>`);
-  });
 
   $(document).on('contextmenu', '#switch-display', function (e) {
     e.preventDefault();
@@ -802,15 +777,10 @@ $(function () {
 
   $('#switch-menu li').click(function (e) {
     util.setLocalStorage(DISPLAY_MODE, `${$(this).data('show')}`);
-    showItems()
+    showItems();
   });
 });
 
-
-$(function () {
-
-
-});
 // Toggle totals display
 $(function () {
   $('[data-totals]').each(function () {
@@ -822,7 +792,6 @@ $(function () {
     if (state) this.checked = state.checked;
   });
 });
-
 
 $(window).bind('unload', function () {
   $('[data-totals]').each(function () {
@@ -838,109 +807,77 @@ window.addEventListener('storage', function (e) {
   let dataChanged = false;
   switch (e.key) {
     case DATA_STORAGE: {
-      let changedData = util.getLocalStorage(DATA_STORAGE);
-      let lastChange = changedData[changedData.length - 1];
-      let lastSave = [saveData[saveData.length - 1]]
-      if (lastChange != lastSave) {
-        saveData = changedData;
-        dataChanged = true;
+        let changedData = util.getLocalStorage(DATA_STORAGE);
+        let lastChange = changedData[changedData.length - 1];
+        let lastSave = [saveData[saveData.length - 1]];
+        if (lastChange != lastSave) {
+          saveData = changedData;
+          dataChanged = true;
+        }
       }
-    }
       break;
     // CUSTOM: Additional storage keys to check for changes in count
-    case `${APP_PREFIX}ClanGoodieBags`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}ClanGoodieBags`));
-      if (clanGoodieBags != changedItems) {
-        clanGoodieBags = changedItems;
+    case `${APP_PREFIX}WhiteChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}WhiteChristmasPresent`));
+      if (whites != changedItems) {
+        whites = changedItems;
         dataChanged = true;
       }
       break;
     }
-    case `${APP_PREFIX}MaizeMaze`: {
-      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}MaizeMaze`));
-      if (maizeMaze != changedItems) {
-        maizeMaze = changedItems;
+    case `${APP_PREFIX}BlueChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}BlueChristmasPresent`));
+      if (blues != changedItems) {
+        blues = changedItems;
         dataChanged = true;
       }
       break;
     }
-    // CUSTOM: Additional tracking for all individual spoils
-    case spoils[0].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[0].storage));
-      if (basic1 != changedItems) {
-        basic1 = changedItems;
+    case `${APP_PREFIX}PurpleChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}PurpleChristmasPresent`));
+      if (purples != changedItems) {
+        purples = changedItems;
         dataChanged = true;
       }
-    }
       break;
-    case spoils[1].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[1].storage));
-      if (basic2 != changedItems) {
-        basic2 = changedItems;
+    }
+    case `${APP_PREFIX}GoldChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}GoldChristmasPresent`));
+      if (golds != changedItems) {
+        golds = changedItems;
         dataChanged = true;
       }
-    }
       break;
-    case spoils[2].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[2].storage));
-      if (basic3 != changedItems) {
-        basic3 = changedItems;
+    }
+    case `${APP_PREFIX}SantasChristmasPresent`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}SantasChristmasPresent`));
+      if (santas != changedItems) {
+        santas = changedItems;
         dataChanged = true;
       }
-    }
       break;
-    case spoils[3].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[3].storage));
-      if (impressive1 != changedItems) {
-        impressive1 = changedItems;
+    }
+    case `${APP_PREFIX}Exchanged`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}Exchanged`));
+      if (exchanged != changedItems) {
+        exchanged = changedItems;
         dataChanged = true;
       }
-    }
       break;
-    case spoils[4].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[4].storage));
-      if (impressive2 != changedItems) {
-        impressive2 = changedItems;
+    }
+    case `${APP_PREFIX}MysteryGifts`: {
+      let changedItems = parseInt(util.getLocalStorage(`${APP_PREFIX}MysteryGifts`));
+      if (mysterygifts != changedItems) {
+        mysterygifts = changedItems;
         dataChanged = true;
       }
-    }
       break;
-    case spoils[5].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[5].storage));
-      if (impressive3 != changedItems) {
-        impressive3 = changedItems;
-        dataChanged = true;
-      }
     }
-      break;
-    case spoils[6].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[6].storage));
-      if (prestigious1 != changedItems) {
-        prestigious1 = changedItems;
-        dataChanged = true;
-      }
-    }
-      break;
-    case spoils[7].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[7].storage));
-      if (prestigious2 != changedItems) {
-        prestigious2 = changedItems;
-        dataChanged = true;
-      }
-    }
-      break;
-    case spoils[8].storage: {
-      let changedItems = parseInt(util.getLocalStorage(spoils[8].storage));
-      if (prestigious3 != changedItems) {
-        prestigious3 = changedItems;
-        dataChanged = true;
-      }
-    }
-      break;
   }
 
   if (dataChanged) {
-    const types = typeof (JSON.parse(e.oldValue)) === typeof (JSON.parse(e.newValue)) ? typeof (JSON.parse(e.newValue)) : 'mismatch';
+    const types =
+      typeof JSON.parse(e.oldValue) === typeof JSON.parse(e.newValue) ? typeof JSON.parse(e.newValue) : 'mismatch';
     switch (types) {
       case 'mismatch':
         throw new Error('Data type mismatch');
@@ -952,8 +889,7 @@ window.addEventListener('storage', function (e) {
       default:
         console.debug('Local Storage changed:', `${e.key}, ${e.oldValue} -> ${e.newValue}`);
     }
-    // CUSTOM: Update bags of spoils count
-    bagsOfSpoils = basic1 + basic2 + basic3 + impressive1 + impressive2 + impressive3 + prestigious1 + prestigious2 + prestigious3;
+
     currentList = 0;
     showItems();
   }
@@ -963,4 +899,4 @@ window.addEventListener('storage', function (e) {
 window.toggleChat = () => {
   debugChat = !debugChat;
   console.log('Debug chat:', debugChat);
-}
+};

@@ -1,6 +1,6 @@
 {
-  "appName": "HarvestHollowHaul",
-  "description": "Tracks rewards from Harvest Hollow event. Based on the Seren Tracker by ZeroGwafa",
+  "appName": "ChristmasTracker",
+  "description": "Tracks rewards from Christmas presents. Based on the Seren Tracker by ZeroGwafa",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",
   "iconUrl": "./assets/icon.png",
@@ -9,6 +9,6 @@
   "minWidth": 218,
   "minHeight": 280,
   "requestHandlers": [],
-  "activators": [],
+  "activators": ["regex:(.*Christmas Present)"],
   "permissions": "pixel,gamestate,overlay"
 }
