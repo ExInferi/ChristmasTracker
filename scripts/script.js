@@ -446,7 +446,7 @@ function getTotal(source) {
 
 // Function to display totals on top of the list
 function displayTotal(text, total) {
-  $('#item-list').append(`<li style="color:${rgbColor}">${text}: <strong>${total}</strong></li>`);
+  $('#item-list').append(`<li style="color:${rgbColor}">${text}: <strong>${total.toLocaleString()}</strong></li>`);
 }
 // Function to append items to the list below
 function appendItems(items) {
