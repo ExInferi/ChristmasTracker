@@ -280,8 +280,8 @@ function readChatbox() {
     });
   }
   if (foundMystery) {
-    const regex = /(\[\d+:\d+:\d+\]) You unwrap your mystery gift and receive: \s?((?:\1 \d+[ x ][\w\s':+\-!()\d]+ ?)+)/g;
-    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
+    const regex = /(\[\d+:\d+:\d+\]) You unwrap your mystery gift and receive: \s?((?:\1 \d+[ x ][\w\s':&+\-!()\d]+ ?)+)/g;
+    const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+&:\-!()\d]*)/g;
     const rewardRegex = new RegExp(regex.source);
     const rewards = chat.match(regex);
     const counter = `${APP_PREFIX}MysteryGifts`;
