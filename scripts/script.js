@@ -218,9 +218,9 @@ function readChatbox() {
   let opts = reader.read() || [];
   let chat = '';
   // CUSTOM: Ignore currency pouch
-  const ignoreLine = /\[\d+:\d+:\d+\] \d*,?\d* coins have been added to your money pouch.\s?/g;
+  const ignoreLine = /\[\d+:\d+:\d+\] [\d,]+ coins have been added to your money pouch.\s?/g;
   for (let a in opts) {
-    chat += opts[a].text.replace(',', '') + ' ';
+    chat += opts[a].text.replace(/,/g, '') + ' ';
   }
   chat = chat.replace(ignoreLine, '');
   // DEBUG: See chat and opts in console
