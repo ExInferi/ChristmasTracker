@@ -117,6 +117,7 @@ reader.readargs = {
     A1lib.mixColor(102, 152, 255), // Common reward color (blue)
     A1lib.mixColor(163, 53, 238), // Uncommon reward color (purple)
     A1lib.mixColor(255, 128, 0), // Rare reward color (orange)
+    A1lib.mixColor(255, 0, 0), // Red "Well done!" XP/Level goal text
     whiteColor, // White Christmas Present
     blueColor, // Blue Christmas Present
     purpleColor, // Purple Christmas Present
@@ -243,7 +244,7 @@ function readChatbox() {
 
   if (foundPresent) {
     const regex =
-      /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1 \d+[ x ]?[\w\s':+\-!()\d]+ ?)+)/g;
+      /(\[\d+:\d+:\d+\]) You open the Christmas present and receive: \s?((?:\1.*))/g;
     const itemRegex = /\[\d+:\d+:\d+\] (\d+)\s*x?\s*([\w\s'+:\-!()\d]*)/g;
     const rewardRegex = new RegExp(regex.source);
     const rewards = chat.match(regex);
