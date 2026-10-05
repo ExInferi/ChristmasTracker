@@ -41,12 +41,17 @@ Have fun tracking!
 
 ## Updates
 
+**Update 11 December 2024, 21:25 Game Time**:
+
+* Fixed rewards not properly logging when automatically redeeming stars and lamps.
+
 **Update 8 December 2024, 20:45 Game Time**:
 
 * Fixed D&D Tokens not fully capturing within mystery gifts.
 
 **Update 3 December 2024, 07:30 Game Time**:
 
+* Added tracking of mystery gift contents.
 * Added tracking of mystery gift contents.
 
 **Update 2 December 2024, 20:45 Game Time**:
