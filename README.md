@@ -41,6 +41,10 @@ Have fun tracking!
 
 ## Updates
 
+**Update 5 October 2026, 18:00 Game Time**:
+
+* Fixed issue with tracking and recognition of Christmas presents.
+
 **Update 11 December 2024, 21:25 Game Time**:
 
 * Fixed rewards not properly logging when automatically redeeming stars and lamps.
