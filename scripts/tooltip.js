@@ -47,9 +47,6 @@ export default class TTReader {
         var r = (found ? TTReader.read(dir) : null);
         this.trackcallback(r);
     }
-    static debug(font) {
-        OCR.debug(font);
-    }
     static drawOverlay(tooltip, ignoregroup) {
         if (!ignoregroup) {
             alt1.overLayFreezeGroup("pc_tooltipread");
@@ -79,7 +76,7 @@ export default class TTReader {
             return false;
         }
         if (!buf) {
-            buf = A1lib.capture(mousepos.x, mousepos.y + (up ? -1 : 1) * (far ? 37 : (up ? 32 : 28)), 5, 5);
+            buf = A1lib.capture(mousepos.x, mousepos.y + (up ? -1 : 1) * (far ? 37 : 27), 5, 5);
         }
         if (!buf) {
             return false;
@@ -87,7 +84,7 @@ export default class TTReader {
         var data = buf.data;
         var blacks = 0;
         for (var i = 0; i < data.length; i += 4) {
-            if (data[i] == 0 && data[i + 1] == 0 && data[i + 2] == 0) {
+            if (data[i] == 15 && data[i + 1] == 14 && data[i + 2] == 12) {
                 blacks++;
             }
         }
@@ -160,7 +157,7 @@ export default class TTReader {
         var rect = null;
         while (cx >= 0 && cx < buffer.width && cy >= 0 && cy < buffer.height) {
             var i = 4 * cx + 4 * buffer.width * cy;
-            if (buffer.data[i] == 0 && buffer.data[i + 1] == 0 && buffer.data[i + 2] == 0) {
+            if (buffer.data[i] == 15 && buffer.data[i + 1] == 14 && buffer.data[i + 2] == 12) {
                 rect = this.attemptFill(buffer, cx, cy, dir);
                 if (rect) {
                     break;
@@ -215,7 +212,7 @@ export default class TTReader {
         var name = "";
         for (var a = 0; a < 2; a++) {
             var wiggle = Math.round(Math.random() * 6 - 3);
-            line1 = OCR.findReadLine(data, font, [[248, 213, 107], [184, 209, 209]], area.x + Math.floor(area.width / 2) + 20 + 20 * a + wiggle, area.y + 14);
+            line1 = OCR.findReadLine(data, font, [[248, 213, 107], [184, 209, 209]], area.x + Math.floor(area.width / 2) + 20 + 20 * a + wiggle, area.y + 15);
             if (line1 && line1.text) {
                 var m = line1.text.match(/\w/g);
                 if (m && m.length >= 4) {
@@ -227,7 +224,7 @@ export default class TTReader {
         if (area.height > 30) {
             for (var a = 0; a < 2; a++) {
                 var wiggle = Math.round(Math.random() * 6 - 3);
-                line2 = OCR.findReadLine(data, font, [[248, 213, 107], [184, 209, 209]], area.x + Math.floor(area.width / 2) - 20 + 20 * a + wiggle, area.y + 14 + 15);
+                line2 = OCR.findReadLine(data, font, [[248, 213, 107], [184, 209, 209]], area.x + Math.floor(area.width / 2) - 20 + 20 * a + wiggle, area.y + 15 + 15);
                 if (line2 && line2.text) {
                     var m = line2.text.match(/[\)\(\w\)]/g);
                     if (m && m.length >= 3) {
@@ -247,15 +244,15 @@ export default class TTReader {
     static readInteraction(img, area) {
         var data = img.toData();
         var colors = [
-            [235, 224, 188], // The white interaction
-            [184, 209, 209], // F2P item
-            [248, 213, 107], // member item
-            [0, 255, 255], // item interaction
-            [255, 255, 0], //npc
+			[227, 215, 207],//~white
+			[0, 255, 255],//interactive scenery
+			[248, 213, 107],//memb item
+			[184, 209, 209],//nonmemb item
+			[255, 255, 0],//npc
         ];
         //throw "not completely implemented. OCR only supports one colors at a time";
         //TODO only one color allowed atm
-        var lines = OCR.findReadLine(data, font, colors, area.x + 12, area.y + 14);
+        var lines = OCR.findReadLine(data, font, colors, Math.floor(area.width / 2) + 8, area.y + 15);
         return lines;
     }
     static searchBuffer(buffer, x = 0, y = 0, w = buffer.width, h = buffer.height) {
@@ -265,7 +262,7 @@ export default class TTReader {
             var cx = x + Math.round((w - 1) / xsteps * a);
             for (var cy = y; cy < y + h; cy++) {
                 var i = 4 * cx + 4 * buffer.width * cy;
-                if (data[i] == 0 && data[i + 1] == 0 && data[i + 2] == 0) {
+                if (data[i] == 15 && data[i + 1] == 14 && data[i + 2] == 12) {
                     var r = this.attemptFill(buffer, cx, cy, -1);
                     if (typeof r == "object") {
                         return r;
@@ -283,7 +280,7 @@ export default class TTReader {
         //scan in oposite x dir until nonblack pixel is found
         for (var x1 = x; x1 >= 0 && x1 < buf.width; x1 -= dir[0]) {
             var i = 4 * x1 + 4 * buf.width * y;
-            if (buf.data[i] == 0 && buf.data[i + 1] == 0 && buf.data[i + 2] == 0) {
+            if (buf.data[i] == 15 && buf.data[i + 1] == 14 && buf.data[i + 2] == 12) {
                 continue;
             }
             break;
@@ -295,7 +292,7 @@ export default class TTReader {
         //scan in oposite y dir until nonblack pixel is found
         for (var y1 = y; y1 >= 0 && y1 < buf.height; y1 -= dir[1]) {
             var i = 4 * x + 4 * buf.width * y1;
-            if (buf.data[i] == 0 && buf.data[i + 1] == 0 && buf.data[i + 2] == 0) {
+            if (buf.data[i] == 15 && buf.data[i + 1] == 14 && buf.data[i + 2] == 12) {
                 continue;
             }
             break;
@@ -307,7 +304,7 @@ export default class TTReader {
         //scan in x dir from known max y to find 2nd x
         for (var x2 = x1; x2 >= 0 && x2 < buf.width; x2 += dir[0]) {
             var i = 4 * x2 + 4 * buf.width * y1;
-            if (buf.data[i] == 0 && buf.data[i + 1] == 0 && buf.data[i + 2] == 0) {
+            if (buf.data[i] == 15 && buf.data[i + 1] == 14 && buf.data[i + 2] == 12) {
                 continue;
             }
             break;
@@ -316,7 +313,7 @@ export default class TTReader {
         //scan in y dir from known max x to find 2nd y
         for (var y2 = y1; y2 >= 0 && y2 < buf.height; y2 += dir[1]) {
             var i = 4 * x1 + 4 * buf.width * y2;
-            if (buf.data[i] == 0 && buf.data[i + 1] == 0 && buf.data[i + 2] == 0) {
+            if (buf.data[i] == 15 && buf.data[i + 1] == 14 && buf.data[i + 2] == 12) {
                 continue;
             }
             break;
