@@ -252,7 +252,7 @@ export default class TTReader {
         ];
         //throw "not completely implemented. OCR only supports one colors at a time";
         //TODO only one color allowed atm
-        var lines = OCR.findReadLine(data, font, colors, Math.floor(area.width / 2) + 8, area.y + 15);
+        var lines = OCR.findReadLine(data, font, colors, area.x + 8, area.y + 15);
         return lines;
     }
     static searchBuffer(buffer, x = 0, y = 0, w = buffer.width, h = buffer.height) {
