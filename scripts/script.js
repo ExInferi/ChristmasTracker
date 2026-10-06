@@ -488,7 +488,7 @@ function createList(total, type) {
       if (remaining > 0) {
         // const remainingItems = saveData.reverse().slice(start, start + remaining);
         // CUSTOM: Filter out items with source 'Exchanged'
-        const remainingItems = filteredData.reverse().slice(start, start + remaining);
+        const remainingItems = [...filteredData].reverse().slice(start, start + remaining);
         appendItems(remainingItems);
       }
     }
